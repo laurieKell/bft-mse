@@ -1,0 +1,10 @@
+\contentsline {section}{\numberline {1.}Introduction}{3}{section.1}
+\contentsline {section}{\numberline {2.}Management Strategy Evaluation}{3}{section.2}
+\contentsline {subsection}{\numberline {2.1}Operating Model}{3}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Management Procedure}{3}{subsection.2.2}
+\contentsline {subsubsection}{\numberline {2.21}Harvest Control Rules}{3}{subsubsection.2.2.1}
+\contentsline {subsubsection}{\numberline {2.22}Observation Error Model}{4}{subsubsection.2.2.2}
+\contentsline {subsubsection}{\numberline {2.23}Scenarios}{4}{subsubsection.2.2.3}
+\contentsline {section}{\numberline {3.}Example}{5}{section.3}
+\contentsline {section}{\numberline {4.}Tables}{7}{section.4}
+\contentsline {section}{\numberline {5.}Figures}{8}{section.5}

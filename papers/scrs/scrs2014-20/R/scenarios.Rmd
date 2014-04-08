@@ -1,0 +1,196 @@
+Risk paper II
+========================================================
+
+```{r, echo=FALSE}
+opts_chunk$set(comment=NA, 
+               fig.width =8, 
+               fig.height=6,
+               fig.path  ="../figs/om",
+               warning=FALSE, 
+               message=FALSE, 
+               error  =FALSE, 
+               echo   =FALSE,
+               cache  =FALSE)
+```
+
+```{r}
+library(FLCore)
+library(kobe)
+library(diags)
+library(FLBRP)
+library(ggplotFL)
+library(FLMethLen)
+library(FLsz)
+library(FLAssess)
+
+## Dirs for paper 
+dirMy ="/home/laurie/Desktop/Dropbox/collaboration/lapolad"
+dirDat=paste(dirMy,"data",sep="/")
+
+par =gislasim(FLPar(linf=318.85*.96,k=0.093,t0=-0.97-.16667,a=1.96e-5,b=3.0092,ar=4.0))
+lhBr=lh(par)
+
+scn=expand.grid(Catch           =c("inflated","reported"),
+                Recruitment     =c("low","med","high"),
+                stringsAsFactors=FALSE)
+
+load(paste(dirDat,"OM.RData", sep="/"))
+load(paste(dirDat,"rpt.RData",sep="/"))
+load(paste(dirDat,"kb.RData", sep="/"))
+
+names(OM)=c("Inflated","Reported")
+OM[["Inflated"]]=iter(OM[["Inflated"]],1)
+OM[["Reported"]]=iter(OM[["Reported"]],1)
+```
+
+**Main effects**
+```{r}
+ALK       =rbind(Linf     =cbind(Linf=c(0.75,1,1.25),k=1),
+                 k        =cbind(Linf=1,k=c(0.75,1,1.25)))
+
+Catch      =factor(c("Reported","Inflated"),level=c("Inflated","Reported"))
+Recruitment=factor(c("med","low","high"),level=c("med","low","high"))
+Steepness  =c(1,0.7)
+M          =factor(c("SCRS","Lorenzen"), level=c("SCRS","Lorenzen"))
+M1         =c(1,1.5)
+FRatio     =c(TRUE,FALSE)
+PlusGrpM   =c(1,2)
+
+baseCase   =data.frame(Catch=Catch[1],
+                       Recruitment=Recruitment[1],
+                       Steepness  =Steepness[1],
+                       M          =M[1],
+                       M1         =M1[1],
+                       FRatio     =FRatio[1],
+                       PlusGrpM   =PlusGrpM[1])
+
+mainEffects=rbind(cbind(baseCase[,-1],Catch      =Catch),
+                  cbind(baseCase[,-2],Recruitment=Recruitment[-1]),
+                  cbind(baseCase[,-3],Steepness  =Steepness[-1]),
+                  cbind(baseCase[,-4],M          =M[-1]),
+                  cbind(baseCase[,-5],M1         =M1[-1]),
+                  cbind(baseCase[,-6],FRatio     =FRatio[-1]),
+                  cbind(baseCase[,-7],PlusGrpM   =PlusGrpM[-1]))[
+                 ,c("Catch","Recruitment","Steepness","M","M1","FRatio","PlusGrpM")]
+```
+
+
+**Interactions**
+```{r}
+ALK       =rbind(Linf=cbind(Linf=c(0.75,1,1.25),k=1),
+                 k   =cbind(Linf=1,k=c(0.75,1,1.25)))
+
+Interactions=expand.grid(Catch      =Catch,
+                         Recruitment=Recruitment,
+                         Steepness  =Steepness,
+                         M          =M,
+                         SRP        =M1,
+                         FRatio     =FRatio,
+                         PlusGrpM   =PlusGrpM,
+                         key        =1:6)
+Interactions=transform(Interactions,k=ALK[key,"k"],Linf=ALK[key,"Linf"])[,-7]
+
+rm(ALK)
+```
+
+**Functions**
+```{r}
+#Calculate Virgin Biomass given steepness and years
+srParam=function(om,Steepness,recYrs,mult=1){
+  ## fit SRR and get alpha & beta for fixed steepness
+  br=FLBRP(om)
+  
+  sr=as.FLSR(om[,ac(recYrs)],model="bevholtSV")
+  sr=fmle(sr,fixed=list(s=Steepness,spr0=spr0(br)))
+  
+  params(sr)["v"]=params(sr)["v"]*mult
+  
+  model(br) =bevholt()$model
+  params(br)=ab(params(sr),"bevholt")[c("a","b")]
+  brp(br)}
+
+# Calcs Plus group biomass as a ratio at BMSY
+pgBMSY=function(br){
+  fbar(br)=FLQuant(c(refpts(br)["msy","harvest"]))
+  pg=ac(range(br)["plusgroup"])
+
+stock.n(br)[pg]*
+       mat(br)[pg]*
+  stock.wt(br)[pg]*exp(-harvest(br)[pg]*harvest.spwn(br)[pg]
+                       -m(      br)[pg]*      m.spwn(br)[pg])}
+
+
+effectsFuture=function(om,M,M1,FRatio,PlusGrpM,lorenzen){
+
+    #M  
+    if (M=="Lorenzen") m(om)[]=lorenzen[dimnames(m(om))$age]
+    
+    #M1
+    m(om)[1]=m(om)[1]*M1
+    
+    #PlusGrpM
+    m(om)[ac(range(om)["plusgroup"])]=m(om)[ac(range(om)["plusgroup"])]*PlusGrpM
+    
+    #FRatio 
+    vpa=VPA(om, fit.plusgroup=FRatio)
+    stock.n(om)=stock.n(vpa) 
+    harvest(om)=harvest(vpa) 
+    
+    om}
+
+smryStat=function(om,br,pg=ac(range(om)["plusgroup"]),refYr=ac(1950:1980)){
+    rbind.fill(cbind(ref="absolute",
+    model.frame(FLQuants(biomass=stock(om),
+                         ssb    =ssb(  om),
+                         pg     =ssb(  om[pg]),
+                         yield  =catch(om),
+                         harvest=fbar( om)),drop=T)),
+    cbind(ref="msy",
+    model.frame(FLQuants(biomass=stock(om)%/%refpts(br)["msy","biomass"],
+                         ssb    =ssb(  om)%/%refpts(br)["msy","ssb"],
+                         pg     =ssb(  om[pg])%/%pgBMSY(br),
+                         yield  =catch(om)%/%refpts(br)["msy","yield"],
+                         harvest=fbar( om)%/%refpts(br)["msy","harvest"]),drop=T)),
+    cbind(ref="rel",
+    model.frame(FLQuants(biomass=stock(om)/mean(stock(  om)[,refYr]),
+                         ssb    =ssb(  om)/mean(ssb(    om)[,refYr]),
+                         pg     =ssb(  om[pg])/mean(ssb(om)[,refYr]),
+                         yield  =catch(om)/mean(catch(  om)[,refYr]),
+                         harvest=fbar( om)/mean(fbar(   om)[,refYr])),drop=T)))}
+```
+
+**Run Main Effects**
+```{r}
+run=function(Catch,Steepness,Recruitment,M,M1,FRatio,PlusGrpM,OM,TAC,recYrs,lorenzen,smry=TRUE){    
+    om=OM[[Catch]]
+    br=srParam(om,Steepness,recYrs[[Recruitment]])
+    
+    om=effectsFuture(om,M,M1,FRatio,PlusGrpM,lorenzen)
+    
+    om=fwdWindow(om,end=2023,br)
+    om=fwd(om,catch=FLQuant(TAC,dimnames=list(year=2012:2023))*1000,sr=br)
+    
+    if (!smry) return(om)
+    
+    smryStat(om,br)}
+
+oms=FLStocks(mlply(mainEffects,run,
+      OM=OM,TAC=13900,recYrs=list(med=1954:2010,low=1954:1980,high=1981:2010),
+      lorenzen=m(lhBr),smry=FALSE))
+plot(oms)
+
+save(oms,file=paste(dirDat,"oms.RData",sep="/"))
+
+bc=mdply(mainEffects[1,],run,
+             OM=OM,TAC=13900,recYrs=list(med=1954:2010,low=1954:1980,high=1981:2010),
+             lorenzen=m(lhBr))
+
+effects=mdply(mainEffects[-1,],run,
+         OM=OM,TAC=13900,recYrs=list(med=1954:2010,low=1954:1980,high=1981:2010),
+         lorenzen=m(lhBr))
+effects=rbind(bc,effects)
+
+save(mainEffects,effects,bc,file=paste(dirDat,"results.RData",sep="/"))
+
+write.table(effects,file=paste(dirMy,"results.csv",sep="/"),row.names=FALSE)
+```

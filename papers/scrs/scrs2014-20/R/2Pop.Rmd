@@ -1,0 +1,82 @@
+Risk paper II
+========================================================
+
+```{r, echo=FALSE}
+opts_chunk$set(comment=NA, 
+               fig.width =8, 
+               fig.height=6,
+               fig.path  ="../figs/om",
+               warning=FALSE, 
+               message=FALSE, 
+               error  =FALSE, 
+               echo   =FALSE,
+               cache  =FALSE)
+```
+
+```{r}
+library(FLCore)
+library(kobe)
+library(diags)
+library(FLBRP)
+library(ggplotFL)
+library(FLMethLen)
+library(FLsz)
+library(FLAssess)
+
+## Dirs for paper 
+dirMy ="/home/laurie/Desktop/Dropbox/collaboration/lapolad"
+dirDat=paste(dirMy,"data",sep="/")
+
+par =gislasim(FLPar(linf=318.85*.96,k=0.093,t0=-0.97-.16667,a=1.96e-5,b=3.0092,ar=4.0))
+lhBr=lh(par)
+
+scn=expand.grid(Catch           =c("inflated","reported"),
+                Recruitment     =c("low","med","high"),
+                stringsAsFactors=FALSE)
+
+load(paste(dirDat,"OM.RData", sep="/"))
+load(paste(dirDat,"rpt.RData",sep="/"))
+load(paste(dirDat,"kb.RData", sep="/"))
+
+names(OM)=c("Inflated","Reported")
+OM[["Inflated"]]=iter(OM[["Inflated"]],1)
+OM[["Reported"]]=iter(OM[["Reported"]],1)
+```
+
+
+**2 Populations**
+```{r}
+pop2=function(om,Steepness,recYrs,popMult=0.5,caMult=1/3){    
+
+    subPop=function(om,mult){
+        
+      stock.n(om)[,1]=stock.n(om)[,1]*mult
+      catch.n(om)[,1]=catch.n(om)[,1]*mult
+      fwd(om,catch=catch(om)[,-1]*mult, sr=FLBRP(om),sr.residuals=rec(om)*mult)}
+    
+    om.=subPop(om,popMult)
+    om.=fwdWindow(om.,end=2023,FLBRP(om))
+    sr=srParam(om.,Steepness,recYrs,popMult)
+    
+    om1=fwd(om., catch=catch(om)[,ac(2000:2011)]*caMult,sr=FLBRP(om.),sr.residuals=rec(om.))
+    om1=fwd(om1,catch=FLQuant(TAC*caMult,dimnames=list(year=2012:2023))*1000,sr=sr)
+    
+    om2=fwd(om., catch=catch(om)[,ac(2000:2011)]*(1-caMult),sr=FLBRP(om.),sr.residuals=rec(om.))
+    om2=fwd(om2,catch=FLQuant(TAC*(1-caMult),dimnames=list(year=2012:2023))*1000,sr=sr)
+    
+    catch.n(om.)=catch.n(om1)+catch.n(om2)
+    harvest(om.)=harvest(om1)*catch.n(om1)/(catch.n(om1)+catch.n(om2))+
+                 harvest(om2)*catch.n(om2)/(catch.n(om1)+catch.n(om2))
+    catch(om.)=computeCatch(om.)
+                
+    vpa=VPA(om.)
+
+    stock.n(om.)=stock.n(vpa)
+    harvest(om.)=harvest(vpa) 
+    
+    om.}
+```
+
+res=mdply(scn[1:12,c("Catch","Steepness","Recruitment")],run,
+      OM=OM,TAC=13900,recYrs=list(low=1954:1980,medium=1954:2010,high=1981:2010))
+```

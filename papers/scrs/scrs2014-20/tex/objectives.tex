@@ -1,0 +1,364 @@
+\documentclass[a4paper,10pt]{article}
+%\documentclass[a4paper,10pt]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[authoryear]{natbib}
+
+\title{}
+
+\begin{document}
+\maketitle
+
+\section*{MSE}
+
+MSE involves a number of steps \cite{punt2007developing} i.e.
+
+\begin{enumerate}
+ \item Identification of management goals (and performance measures to quantify the extent to which those goals have been achieved).
+ \item Selection of hypotheses which impact on the risk of not achieving those goals, and development of Operating Models which represent those hypotheses.
+ \item Conditioning of the Operating Models on the available data and knowledge (and possible rejection of hypotheses [or combinations of hypotheses] 
+        which are not compatible with those data and knowledge).
+ \item  Identification of candidate management strategies.
+ \item  Simulation of the performance of the management strategies by projecting the Operating Model forward in which management is 
+        set using the management strategy.
+\end{enumerate}
+
+In this study we are primarily concerned with the first two steps, i.e. to identify management objectives and corresponding performance 
+measures and to prioritise which processes should be included in the MSE when evaluating candidate management strategies. Step 3 conditioning 
+the operating model will be done later as part of the full MSE. Rather than evaluating alternative management strategy, i.e. step 4, we evaluate 
+the current strategy, the recovery plan, in order to rank the importance of the different sources of uncertainty. 
+Simulation is therefore a simplified procedure, since we do not conduct Monte Carlo simulation with multiple OMs and candidate management strategies 
+with feedback. Instead we evaluate how sensitive the current strategy is to the assumptions; this is done in two ways, i.e.
+
+\begin{description}
+ \item[sensitivity analysis] 
+ \item[elasticity analysis] 
+\end{description}
+
+\subsection*{Objectives}
+
+First we summarise the explicit management objectives for bluefin i.e. those in the ICCAT Basic Texts and in the recomendations made 
+in respect of the bluefin recovery plan by the Commission.
+
+Then we discuss implicit objectives based on The Principles Of Decision Making For Iccat Conservation And Management Measures
+that are consistent with the Precautionary approach and the Straddling stocks agreement and other conventions such as CITES.
+
+\subsubsection*{Explicit}
+
+The main management objective of ICCAT is to maintain the populations of tuna and tuna-like fishes at levels which will permit 
+the maximum sustainable catch. Originally interpreted as using MSY as a target.
+
+In 2007 a 15 year Recovery Plan was implemented with the goal of achieving $B_{MSY}$ with at least a 60\% probability by 2022.
+
+The corresponding objectives are therefore to achieve the maximum long-term yield and ensure that by 2022 the stock is
+greater than $B_{MSY}$ with a 60\% probability.
+
+\subsubsection*{Implicit}
+
+We also consider objectives based on a variety of agreements.
+
+The objective of the United Nations Conference On Straddling Fish Stocks And Highly Migratory Fish Stock Agreement is to ensure the long-term conservation and
+sustainable use of straddling fish stocks and highly migratory fish stock consistent with the precautionary approach (see http://daccess-ods.un.org/TMP/8829557.8956604.html).
+
+Both the Straddling Stocks agreement and the PA were signed after the Basic Text of ICCAT. However, the principles of decision making [Rec 11-13]
+note that management decisions should be based upon scientific advice consistent with the precautionary approach. Therefore although not
+explicitly stated in the bluefin recovery plan in this study we consider management objectives based on the PA and Straddling Fish Stocks agreements.
+
+There are other Conventions which could potentially impact on the management of bluefin, e.g. CITES and the IUCN redlist. A proposal for listing Alantic bluefin 
+on CITES appendix I and II was made in 2009, the criteria for a CITES listing for a commercial species are given in footnote 2 in CITES Conf 9.24.
+Atlantic bluefin is also classied as ‘Endangered’ on the IUCN Red list based on a combination of factors including limited range, inferred 
+low densities and presumed unsustainable interactions with fisheries. 
+
+\subsection*{Management Strategy}
+
+The management strategy considered is the current advice framework based on Virtual Population Analysis (VPA) to estimate past stock status 
+and a projection to predict future stock status conditional upon TACs. In 2010 (SCRS, 2011) twenty four scenarios were run, i.e. four VPA 
+assessments times six projection scenarios. The VPA scenarios reflected uncertainty about historic catches (reported and inflated) and 
+recent year-class strength. In the latter case this two alternative series of juvenile catch per unit effort series (CPUE) were considered 
+reflecting uncertainty about the effect of management measures on the index.
+The six projection scenarios reflect uncertainty about the effectiveness of the implementation of management measures to
+reduce juvenile mortality (i.e there were 2 selection patterns based on the 2010 selection pattern a 2010 selection pattern
+modified to reduce selectivity of juveniles) and three recruitment scenarios (low, medium and high based on different parts of the time series). 
+Recruitment was modelled as
+a random variable in each year recruitment was drawn from the obsevered recruitment in the past for each recruitment scenario.
+In 2012 following an update of the VPA projections were rerun for only six scenarios, since the selection patterns could now be estimated 
+and a new single CPUE index for juveniles including the effect of management measures had been produced.
+
+Biological parameters, selection pattern (including any modifications due to technical measures 
+that may be implemented), recruitment. Numbers-at-age are poorly estimated for the recent year classes by VPA. Therefore 
+the first three ages in the initial population vector (i.e. for 2009, 2010, and 2011) were replaced with a random value 
+from the stochastic recruitment specifications. These values were then projected forward in time accounting for the observed catches and the 
+assumed natural mortality at age. This results in changes to both the number at age in 2012 (i.e. the first projection year) and the fishing 
+mortality and selectivity-at-age for the three year-classes replaced. The current estimated selectivity pattern was 
+calculated as the geometric mean of the most recent three years i.e.  2009,2010 and 2011 in 2012, 
+similar to the one used in the 2010 projections for calculating benchmarks.
+The plusgroup in the projections was age 10, to ensure consistency with the historic assessment. Weights-at-age in the 
+projections were computed from the growth curve, this included using the average age of the plus-group to calculate the 
+mean weight of individuals in the plusgroup.
+
+
+\newpage\clearpage
+\bibliography{/home/laurie/Desktop/u1/papers/tex/include/refs.bib} 
+\bibliographystyle{abbrvnat} 
+
+
+\newpage
+\section{Tables}
+\clearpage
+  
+  
+  SCRS2011-110-Kell-Fromentin-Bonhommeau.pdf
+  
+\begin{table}[h!]
+  \begin{center}
+    \begin{tabular}{ l p{10cm} }
+    \hline
+    Rule & Definition \\
+    \hline 
+    O0   & Achieve the maximum continuing catch \\
+    O1   & Keep stock in the \emph{green quadrant} by maintaining SSB $\geq$ $B_{_{MSY}}$ and F $\le$ $F_{_{MSY}}$ in 95\% of years 
+          measured over two generations, where $B_{_{MSY}}$ is defined by assessment in the management procedure. \\
+    O2   & When the stock is in the \emph{lower yellow quadrant} limit the probability of decline over a time equal to 1 generation to be low (5\%)
+          when the stock is below the LRP to high (95\%) when at $B_{_{MSY}}$. At stock status levels
+          between these two points, define the tolerance for decline by linear
+          interpolation between these two points. \\ 
+    O3   & When the stock is in the \emph{red or upper yellow quadrants} reduce F so that it is below $F_{_{MSY}}$ with a probability of 95\% after 3 years  \\ 	
+    O4   & Discounted yield  \\ 	
+    O5   & Discounted effort  \\ 	
+     \hline
+    \end{tabular}
+  \end{center}
+  \label{tab:hcr}
+  \caption{Management Objectives}  
+\end{table}
+
+\begin{table}[h!]
+  \begin{center}
+    \begin{tabular}{ l p{10cm} }
+    \hline 
+    Statistic & Definition \\ 
+    \hline 
+    P1   & Probability of SSB $\geq$ $B_{_{MSY}}$ over 2 generation times \\ 
+    P2   & Probability of F $\le$  $F_{_{MSY}}$ over 2 generation times \\ 
+    P3   & Discounted catch\\ 
+    P4   & Average annual variability in catch (AAV) \\ 
+    P5   & Colour of the stock \\
+    \hline 
+    \end{tabular}
+  \end{center}
+  \label{tab:stats}
+  \caption{Performance Statistics}  
+\end{table}
+
+
+
+\begin{table}
+\begin{center}
+\label{tab:datasumm}
+\begin{tabular}{|cccc|}
+\hline
+{\tiny Factor} & {\tiny Values} & {\tiny Notes} & {\tiny References} \\
+\hline\hline
+{\tiny $M_0$} 			& {\tiny 0.3 for all ages}     					& {\tiny As assumed in 2011} 	& {\tiny }\\
+{\tiny $Maturity$} 		& {\tiny 0,0,0,0,.5,1,...}     					& {\tiny ''}			& {\tiny }\\
+{\tiny CPUE} 			& {\tiny All CPUE Series}      					& {\tiny ''}			& {\tiny }\\
+{\tiny LL Selectivities}	& {\tiny 5, 8, 9, 10 \& 11 logistic. Others domeshaped}	& {\tiny ''}			& {\tiny }\\
+{\tiny Penalty on recruit devs}	& {\tiny 20 }               					& {\tiny ''}			& {\tiny }\\
+{\tiny CAS} 			& {\tiny Include China-Taipei} 					& {\tiny ''}			& {\tiny }\\
+{\tiny Sample size} 		& {\tiny Equal weights}        					& {\tiny ''}			& {\tiny }\\
+{\tiny Tagging data} 		& {\tiny None}                 					& {\tiny ''}			& {\tiny }\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Base Case options}
+\label{tab:bc}
+\end{table}
+
+
+\begin{table}
+\begin{center}
+\label{tab:datasumm}
+\begin{tabular}{|cccccc|}
+\hline
+{\tiny Factor} & {\tiny Levels} & {\tiny $\Sigma N$} & {\tiny Values} & {\tiny Prior} & {\tiny Weighting}\\
+\hline\hline
+{\tiny $M_0$} 			& {\tiny 3}   & {\tiny 3}  	& {\tiny  BC; Lorezen; Chen \& Watanabe} 	          	& {\tiny ?}  	& {\tiny ?}\\
+{\tiny $Maturity$} 		& {\tiny 2}   & {\tiny 6}  	& {\tiny  BC; 0,0,0,0.25,.5,.75,1}  				& {\tiny ?}  	& {\tiny ?}\\
+{\tiny CPUE} 			& {\tiny 2}   & {\tiny 12} 	& {\tiny  BC; exclude Japan}     	         		& {\tiny ?}  	& {\tiny ?}\\
+{\tiny LL Selectivities}	& {\tiny 2}   & {\tiny 24} 	& {\tiny  BC, free}		                               	& {\tiny ?}  	& {\tiny ?}\\
+{\tiny Penalty on recruit devs}	& {\tiny 2}   & {\tiny 48} 	& {\tiny  BC; 10}		                              	& {\tiny ?}  	& {\tiny ?}\\
+{\tiny CAS} 			& {\tiny 3}   & {\tiny 144} 	& {\tiny  BC; ex	clude C-T; drop all}		              	& {\tiny ?}  	& {\tiny ?}\\
+{\tiny Sample size} 		& {\tiny 2}   & {\tiny 288} 	& {\tiny  BC; 1-7 divided by 10, others by 1000}  		& {\tiny ?}  	& {\tiny ?}\\
+{\tiny Tagging data} 		& {\tiny 2}   & {\tiny 576} 	& {\tiny  BC; Include}                           		& {\tiny ?}  	& {\tiny ?}\\
+\hline
+\end{tabular}
+\end{center}
+\caption{OM options}
+\label{tab:om}
+\end{table}
+
+\begin{table}
+\begin{center}
+\label{tab:datasumm}
+\begin{tabular}{|cccccc|}
+\hline
+{\tiny Factor} & {\tiny Levels} & {\tiny $\Sigma N$} & {\tiny Values} & {\tiny Prior} & {\tiny Weighting}\\
+\hline\hline
+{\tiny  Catch $\sigma$}		& {\tiny 3}  {\tiny 0.2,0.3,0.4	}	& {\tiny  3}  	& {\tiny  }  	& {\tiny ?}  	& {\tiny ?}\\
+{\tiny  CPUE  $\sigma$} 	& {\tiny 3}  {\tiny 0.2,0.3,0.4}	& {\tiny  9} 	& {\tiny  } 	& {\tiny ?}  	& {\tiny ?}\\
+{\tiny  CPUE  $\omega$} 	& {\tiny 2}  {\tiny 0.5, 1, 2} 		& {\tiny  18} 	& {\tiny  } 	& {\tiny ?}  	& {\tiny ?}\\
+{\tiny  CPUE  age range} 	& {\tiny 3}  {\tiny all, adults} 	& {\tiny  54} 	& {\tiny  } 	& {\tiny ?}  	& {\tiny ?}\\
+\hline
+\end{tabular}
+\end{center}
+\caption{OEM options}
+\label{tab:oem}
+\end{table}
+
+\begin{table}
+\begin{center}
+\label{tab:datasumm}
+\begin{tabular}{|cccccc|}
+\hline
+{\tiny Factor} & {\tiny Levels} & {\tiny $\Sigma N$} & {\tiny Values} & {\tiny Prior} & {\tiny Weighting}\\
+\hline\hline
+{\tiny $r$} 	 				& {\tiny 3}  	& {\tiny 3} 	& {\tiny estimate; prior, perfect}	& {\tiny ?}    & {\tiny ?}\\
+{\tiny $K$}					& {\tiny 3}  	& {\tiny 9}  	& {\tiny estimate; prior, perfect} 	& {\tiny ?}    & {\tiny ?}\\
+{\tiny Shape} 					& {\tiny 3}  	& {\tiny 27} 	& {\tiny fix; prior, perfect}      	& {\tiny ?}    & {\tiny ?}\\
+{\tiny $B_{target}$ as \% of $F_{MSY}$} 	& {\tiny 3}  	& {\tiny 81} 	& {\tiny 60\%,75\%,90\%} 		& {\tiny ?}    & {\tiny ?}\\
+{\tiny $B_{lim}$ as \% of $B_{MSY}$}		& {\tiny 3}  	& {\tiny 243} 	& {\tiny 30\%,35\%,45\%} 	       	& {\tiny ?}    & {\tiny ?}\\
+{\tiny $B_{lim}$ as \% of $K$}			& {\tiny 3}  	& {\tiny 729} 	& {\tiny 15\%,20\%,25\%}         	& {\tiny ?}    & {\tiny ?}\\
+{\tiny $B_{Theshold}$ as \% of $B_{MSY}$}	& {\tiny 3}  	& {\tiny 2187} 	& {\tiny 70\%,85\%,100\%} 		& {\tiny ?}    & {\tiny ?}\\
+{\tiny $B_{Theshold}$ as \% of $K$}		& {\tiny 3}  	& {\tiny 6561}	& {\tiny 35\%,40\%,50\%} 		& {\tiny ?}    & {\tiny ?}\\
+\hline
+\end{tabular}
+\end{center}
+\caption{MP options}
+\label{tab:mp}
+\end{table}
+
+
+
+\newpage\clearpage
+\section*{Appendix}
+
+\subsection*{United Nations Conference On Straddling Fish Stocks And Highly Migratory Fish Stocks}
+
+
+Annex II Guidelines For The Application Of Precautionary Reference Points In Conservation And Management Of Straddling Fish Stocks And Highly Migratory Fish Stocks
+
+ 
+
+1. A precautionary reference point is an estimated value derived through an agreed scientific procedure, which corresponds to the 
+state of the resource and of the fishery, and which can be used as a guide for fisheries management.
+
+2. Two types of precautionary reference points should be used: conservation, or limit, reference points and management, or target, 
+reference points. Limit reference points set boundaries which are intended to constrain harvesting within safe biological 
+limits within which the stocks can produce maximum sustainable yield. Target reference points are intended to meet management objectives.
+
+3. Precautionary reference points should be stock-specific to account, inter alia, for the reproductive capacity, the resilience 
+of each stock and the characteristics of fisheries exploiting the stock, as well as other sources of mortality and major sources of uncertainty.
+
+4. Management strategies shall seek to maintain or restore populations of harvested stocks, and where necessary associated or 
+dependent species, at levels consistent with previously agreed precautionary reference points. Such reference points shall be 
+used to trigger pre-agreed conservation and management action. Management strategies shall include measures which can be implemented when precautionary reference points are approached.
+
+5. Fishery management strategies shall ensure that the risk of exceeding limit reference points is very low. If a stock 
+falls below a limit reference point or is at risk of falling below such a reference point, conservation and management 
+action should be initiated to facilitate stock recovery. Fishery management strategies shall ensure that target reference points are not exceeded on average.
+
+6. When information for determining reference points for a fishery is poor or absent, provisional reference points shall be set. 
+Provisional reference points may be established by analogy to similar and better-known stocks. In such situations, the fishery 
+shall be subject to enhanced monitoring so as to enable revision of provisional reference points as improved information becomes available.
+
+7. The fishing mortality rate which generates maximum sustainable yield should be regarded as a minimum standard for limit reference 
+points. For stocks which are not overfished, fishery management strategies shall ensure that fishing mortality does not exceed that 
+which corresponds to maximum sustainable yield, and that the biomass does not fall below a predefined threshold. For overfished stocks, 
+the biomass which would produce maximum sustainable yield can serve as a rebuilding target.
+
+\subsection*{CITES}
+
+Application of decline for commercially exploited aquatic species
+
+In marine and large freshwater bodies, a narrower range of 5-20 \% is deemed to be more appropriate in most cases, with a range of 5-10 \% being applicable for species with high productivity, 10-15 \% for species with medium productivity and 15-20 \% for species with low productivity. Nevertheless some species may fall outside this range. Low productivity is correlated with low mortality rate and high productivity with high mortality. One possible guideline for indexing productivity is the natural mortality rate, with the range 0.2-0.5 per year indicating medium productivity.
+
+In general, the historical extent of decline should be the primary criterion for consideration of listing in Appendix I. However, in circumstances where information to estimate the extent of decline is limited, the rate of decline over a recent period could itself still provide some information on the extent of decline.
+
+For listing in Appendix II, the historical extent of decline and the recent rate of decline should be considered in conjunction with one another. The higher the historical extent of decline, and the lower the productivity of the species, the more important a given recent rate of decline is.
+
+A general guideline for a marked recent rate of decline is the rate of decline that would drive a population down within approximately a 10-year period from the current population level to the historical extent of decline guideline (i.e. 5-20 \% of baseline for exploited fish species). There should rarely be a need for concern for populations that have exhibited an historical extent of decline of less than 50 \%, unless the recent rate of decline has been extremely high.
+
+Even if a population is not declining appreciably, it could be considered for listing in Appendix II if it is near the extent-of-decline guidelines recommended above for consideration for Appendix-I listing. A range of between 5 \% and 10 \% above the relevant extent of decline might be considered as a definition of near, taking due account of the productivity of the species.
+
+A recent rate of decline is important only if it is still occurring, or may resume, and is projected to lead to the species reaching the applicable point for that species in the Appendix-I extent-of-decline guidelines within approximately a 10-year period. Otherwise the overall extent of decline is what is important. When sufficient data are available, the recent rate of decline should be calculated over approximately a 10-year period. If fewer data are available, annual rates over a shorter period could be used. If there is evidence of a change in the trend, greater weight should be given to the more recent consistent trend. In most cases, listing would only be considered if the decline were projected to continue.
+In considering the percentages indicated above, account needs to be taken of taxon- and case-specific biological and other factors that are likely to affect extinction risk. Depending on the biology, patterns of exploitation and area of distribution of the taxon, vulnerability factors (as listed in this Annex) may increase this risk, whereas mitigating factors (e.g. large absolute numbers or refugia) may reduce it. 
+
+\subsection*{IUCN Red List}
+This Atlantic species has experienced declines in range and reported catch per unit effort (CPUE) since the 1960s. Although a number of uncertainties exist in the reported data, especially from the Mediterranean region, the best estimates from the most recent 2010 stock assessment indicate that there has been a global decline of between 29\% and 51\% based on summed spawning stock biomass (SSB) from both the Western and Eastern stocks over the past 21–39 years (three generations, based on a generation length of between seven and 13 years). Pre-exploitation longevity is not known for the Eastern Atlantic, but it is assumed that at one point that this species had a similar longer generation length across its global range. Therefore, this species is estimated to have declined at least 51\% over the past three generation lengths (39 years) and is listed as Endangered under Criterion A2. In the Eastern Atlantic stock, current fishing mortality is far above maximum sustainable yield (MSY) and estimated SSB is far 
+below MSY. The Western Atlantic stock has experienced severe declines in the past, is also below MSY, and has not recovered under current fishing regimes. Management of the eastern Atlantic stock is essential to the future of this species, as it represents the majority of this species global population. 
+\end{document}
+
+Application of the precautionary approach
+
+1. States shall apply the precautionary approach widely to conservation, management and exploitation of straddling fish stocks and highly migratory fish stocks in order to protect the living marine resources and preserve the marine environment.
+
+2. States shall be more cautious when information is uncertain, unreliable or inadequate. The absence of adequate scientific information shall not be used as a reason for postponing or failing to take conservation and management measures.
+
+3. In implementing the precautionary approach, States shall:
+
+    (a) improve decision-making for fishery resource conservation and management by obtaining and sharing the best scientific information available and implementing improved techniques for dealing with risk and uncertainty;
+
+    (b) apply the guidelines set out in Annex II and determine, on the basis of the best scientific information available, stock-specific reference points and the action to be taken if they are exceeded;
+
+    (c) take into account, inter alia, uncertainties relating to the size and productivity of the stocks, reference points, stock condition in relation to such reference points, levels and distribution of fishing mortality and the impact of fishing activities on non-target and associated or dependent species, as well as existing and predicted oceanic, environmental and socio-economic conditions; and
+
+    (d) develop data collection and research programmes to assess the impact of fishing on non-target and associated or dependent species and their environment, and adopt plans which are necessary to ensure the conservation of such species and to protect habitats of special concern.
+
+4. States shall take measures to ensure that, when reference points are approached, they will not be exceeded. In the event that they are exceeded, States shall, without delay, take the action determined under paragraph 3 (b) to restore the stocks.
+
+5. Where the status of target stocks or non-target or associated or dependent species is of concern, States shall subject such stocks and species to enhanced monitoring in order to review their status and the efficacy of conservation and management measures. They shall revise those measures regularly in the light of new information.
+
+6. For new or exploratory fisheries, States shall adopt as soon as possible cautious conservation and management measures, including, inter alia, catch limits and effort limits. Such measures shall remain in force until there are sufficient data to allow assessment of the impact of the fisheries on the long-term sustainability of the stocks, whereupon conservation and management measures based on that assessment shall be implemented. The latter measures shall, if appropriate, allow for the gradual development of the fisheries.
+
+7. If a natural phenomenon has a significant adverse impact on the status of straddling fish stocks or highly migratory fish stocks, States shall adopt conservation and management measures on an emergency basis to ensure that fishing activity does not exacerbate such adverse impact. States shall also adopt such measures on an emergency basis where fishing activity presents a serious threat to the sustainability of such stocks. Measures taken on an emergency basis shall be temporary and shall be based on the best scientific evidence available.
+
+ 
+
+Article 7
+
+Compatibility of conservation and management measures
+
+1. Without prejudice to the sovereign rights of coastal States for the purpose of exploring and exploiting, conserving and managing the living marine resources within areas under national jurisdiction as provided for in the Convention, and the right of all States for their nationals to engage in fishing on the high seas in accordance with the Convention:
+
+    (a) with respect to straddling fish stocks, the relevant coastal States and the States whose nationals fish for such stocks in the adjacent high seas area shall seek, either directly or through the appropriate mechanisms for cooperation provided for in Part III, to agree upon the measures necessary for the conservation of these stocks in the adjacent high seas area;
+
+    (b) with respect to highly migratory fish stocks, the relevant coastal States and other States whose nationals fish for such stocks in the region shall cooperate, either directly or through the appropriate mechanisms for cooperation provided for in Part III, with a view to ensuring conservation and promoting the objective of optimum utilization of such stocks throughout the region, both within and beyond the areas under national jurisdiction.
+
+2. Conservation and management measures established for the high seas and those adopted for areas under national jurisdiction shall be compatible in order to ensure conservation and management of the straddling fish stocks and highly migratory fish stocks in their entirety. To this end, coastal States and States fishing on the high seas have a duty to cooperate for the purpose of achieving compatible measures in respect of such stocks. In determining compatible conservation and management measures, States shall:
+
+    (a) take into account the conservation and management measures adopted and applied in accordance with article 61 of the Convention in respect of the same stocks by coastal States within areas under national jurisdiction and ensure that measures established in respect of such stocks for the high seas do not undermine the effectiveness of such measures;
+
+    (b) take into account previously agreed measures established and applied for the high seas in accordance with the Convention in respect of the same stocks by relevant coastal States and States fishing on the high seas;
+
+    (c) take into account previously agreed measures established and applied in accordance with the Convention in respect of the same stocks by a subregional or regional fisheries management organization or arrangement;
+
+    (d) take into account the biological unity and other biological characteristics of the stocks and the relationships between the distribution of the stocks, the fisheries and the geographical particularities of the region concerned, including the extent to which the stocks occur and are fished in areas under national jurisdiction;
+
+    (e) take into account the respective dependence of the coastal States and the States fishing on the high seas on the stocks concerned; and
+
+    (f) ensure that such measures do not result in harmful impact on the living marine resources as a whole.
+
+3. In giving effect to their duty to cooperate, States shall make every effort to agree on compatible conservation and management measures within a reasonable period of time.
+
+4. If no agreement can be reached within a reasonable period of time, any of the States concerned may invoke the procedures for the settlement of disputes provided for in Part VIII.
+
+5. Pending agreement on compatible conservation and management measures, the States concerned, in a spirit of understanding and cooperation, shall make every effort to enter into provisional arrangements of a practical nature. In the event that they are unable to agree on such arrangements, any of the States concerned may, for the purpose of obtaining provisional measures, submit the dispute to a court or tribunal in accordance with the procedures for the settlement of disputes provided for in Part VIII.
+
+6. Provisional arrangements or measures entered into or prescribed pursuant to paragraph 5 shall take into account the provisions of this Part, shall have due regard to the rights and obligations of all States concerned, shall not jeopardize or hamper the reaching of final agreement on compatible conservation and management measures and shall be without prejudice to the final outcome of any dispute settlement procedure.
+
+7. Coastal States shall regularly inform States fishing on the high seas in the subregion or region, either directly or through appropriate subregional or regional fisheries management organizations or arrangements, or through other appropriate means, of the measures they have adopted for straddling fish stocks and highly migratory fish stocks within areas under their national jurisdiction.
+
+8. States fishing on the high seas shall regularly inform other interested States, either directly or through appropriate subregional or regional fisheries management organizations or arrangements, or through other appropriate means, of the measures they have adopted for regulating the activities of vessels flying their flag which fish for such stocks on the high seas.
+
+
+

@@ -1,0 +1,66 @@
+\begin{thebibliography}{8}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Fromentin et~al.(2014)Fromentin, Bonhommeau, Arrizabalaga, and
+  L.~Kell]{fromentin2014spectre}
+J.-M. Fromentin, S.~Bonhommeau, H.~Arrizabalaga, and L.~L.~Kell.
+\newblock The spectre of uncertainty in management of exploited fish stocks:
+  the illustrative case of atlantic bluefin tuna.
+\newblock \emph{Marine Policy}, 47:\penalty0 8--14, 2014.
+
+\bibitem[Kell et~al.(2012)Kell, Bonhommeau, Fromentin, Ortiz, and
+  Walter]{kell2012bftkobe}
+L.~Kell, S.~Bonhommeau, J.-M. Fromentin, M.~Ortiz, and J.~Walter.
+\newblock Projections for east atlantic mediterranean bluefin tuna.
+\newblock \emph{{ICCAT} Collect. Vol. of Sci. Pap.}, 64:\penalty0 x:xx--xxx,
+  2012.
+
+\bibitem[Kell et~al.(2013{\natexlab{a}})Kell, Merino, De~Bruyn, Ortiz~de
+  Urbina, Arrizabalaga, Santiago, and Murua]{kell2013mpalbn}
+L.~Kell, G.~Merino, P.~De~Bruyn, J.~Ortiz~de Urbina, H.~Arrizabalaga,
+  J.~Santiago, and H.~Murua.
+\newblock An example of a management procedure based on a biomass dynamic stock
+  assessment model.
+\newblock \emph{{ICCAT} Collect. Vol. Sci. Pap.}, 69\penalty0 (33):\penalty0
+  xxx--xxx, 2013{\natexlab{a}}.
+
+\bibitem[Kell et~al.(2013{\natexlab{b}})Kell, Merino, De~Bruyn, Ortiz~de
+  Urbina, Arrizabalaga, Santiago, and Murua]{kell2013msealbn}
+L.~Kell, G.~Merino, P.~De~Bruyn, J.-M. Ortiz~de Urbina, H.~Arrizabalaga,
+  J.~Santiago, and H.~Murua.
+\newblock An example management strategy evaluation of a harvest control rule.
+\newblock \emph{{ICCAT} Collect. Vol. Sci. Pap.}, 69\penalty0 (35):\penalty0
+  xxx--xxx, 2013{\natexlab{b}}.
+
+\bibitem[Kell et~al.(2014)Kell, Fromentin, and Szuwalski]{kell2014chicken}
+L.~Kell, J.-M. Fromentin, and C.~Szuwalski.
+\newblock Which came first? the chicken, the egg or the tortilla.
+\newblock \emph{{ICCAT} Collect. Vol. of Sci. Pap.}, 66:\penalty0 x:xx--xxx,
+  2014.
+
+\bibitem[Kell.L.T.(2014)]{kell2014bftuncert}
+Kell.L.T.
+\newblock Identification of the major sensitivities in the east atlantic and
+  mediterranean bluefin assessment.
+\newblock \emph{{ICCAT} Collect. Vol. of Sci. Pap.}, 66:\penalty0 x:xx--xxx,
+  2014.
+
+\bibitem[Leach et~al.(Accepted)Leach, Levontin, Holt, Kell, and
+  Mumford]{leach2014elicit}
+A.~Leach, P.~Levontin, J.~Holt, L.~Kell, and J.~Mumford.
+\newblock Identification and prioritization of uncertainties for management of
+  eastern atlantic bluefin tuna (\textit{Thunnus thynnus}).
+\newblock \emph{Marine Policy}, x\penalty0 (xx):\penalty0 xxx--xxx, Accepted.
+
+\bibitem[Punt and Donovan(2007)]{punt2007developing}
+A.~Punt and G.~Donovan.
+\newblock Developing management procedures that are robust to uncertainty:
+  lessons from the international whaling commission.
+\newblock \emph{{ICES} Journal of Marine Science: Journal du Conseil},
+  64\penalty0 (4):\penalty0 603--612, 2007.
+
+\end{thebibliography}

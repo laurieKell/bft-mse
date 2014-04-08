@@ -1,0 +1,123 @@
+Risk paper II
+========================================================
+  
+```{r, echo=FALSE}
+opts_chunk$set(comment=NA, 
+               fig.width =8, 
+               fig.height=6,
+               fig.path  ="../figs/om",
+               warning=FALSE, 
+               message=FALSE, 
+               error  =FALSE, 
+               echo   =FALSE,
+               cache  =FALSE)
+```
+
+```{r}
+library(FLCore)
+library(kobe)
+library(diags)
+library(FLBRP)
+library(ggplotFL)
+library(FLMethLen)
+library(FLsz)
+library(FLAssess)
+library(stargazer)
+
+## Dirs for paper 
+dirMy ="/home/laurie/Desktop/scrs2014/bft-sensitivities"
+dirDat=paste(dirMy,"data",sep="/")
+
+load(paste(dirDat,"results.RData",sep="/"))
+```
+
+**Summary Statistics**
+```{r}
+# relative to base case in 2011
+rel2bc=transform(merge(subset(effects,year>=2011),
+                       subset(bc[,-c(1:7)],year==2011)[,-2],by=c("ref")),
+                 biomass=(biomass.x-biomass.y)/(biomass.y),
+                 ssb    =(ssb.x    -    ssb.y)/(    ssb.y),
+                 pg     =(pg.x     -     pg.y)/(     pg.y),
+                 yield  =(yield.x  -  yield.y)/(  yield.y),
+                 harvest=(harvest.x-harvest.y)/(harvest.y))[,names(effects)]  
+
+rel2bc=merge(rel2bc,cbind(mainEffects,Scenario=1:9))
+tmp   =melt(rel2bc[,-(1:7)],id=c("Scenario","ref","year"))
+tmp   =tmp[do.call(order, tmp[,c("Scenario","variable","ref","year")]), ]
+
+dR=function(x,u=0.05)
+  sum(x/(1-u)^(seq(length(x))-1))
+
+ss=daply(tmp,.(Scenario,variable,ref), function(x) dR(x$value))
+```
+
+Summary Statistics
+----------------------------
+**Absolute**
+```{r}
+ss[,,1]
+```
+
+**Relative to 1950 to 1980**
+```{r}
+ss[,,2]
+```
+
+**Relative to MSY Benchmarks**
+```{r}
+ss[,,3]
+```
+
+```{r,echo=FALSE}
+write(stargazer(data.frame(ss[,,1]),summary=FALSE,
+      out=paste(dirMy,"/tex/ss1.tex",sep="/")))
+write(stargazer(data.frame(ss[,,2]),summary=FALSE,
+      out=paste(dirMy,"/tex/ss2.tex",sep="/")))
+write(stargazer(data.frame(ss[,,3]),summary=FALSE,
+      out=paste(dirMy,"/tex/ss3.tex",sep="/")))
+```
+
+Plots
+-----------------------------
+**SSB**
+```{r-ssb}
+p=merge(effects,cbind(mainEffects,Scenario=as.factor(1:9)))
+p=transform(p,ref=factor(ref,level=c("absolute","rel",                      "msy"),
+                             label=c("Absolute","Relative to 1950:1980","Relative to MSY Benchmarks")))
+ggplot(subset(p,Scenario!=1))+
+          geom_line(aes(year,ssb,col=Scenario))+
+          facet_wrap(~ref,ncol=1,scale="free_y")+
+          geom_line(aes(year,ssb,col=Scenario),data=subset(p,Scenario==1),col="black")+
+          theme_ms(legend.position="bottom")+xlab("Year")+ylab("SSB")
+```
+
+
+**Yield**
+```{r-yield}
+ggplot(subset(p,Scenario!=1))+
+  geom_line(aes(year,yield,col=Scenario))+
+  facet_wrap(~ref,ncol=1,scale="free_y")+
+  geom_line(aes(year,yield,col=Scenario),data=subset(p,Scenario==1),col="black")+
+  theme_ms(legend.position="bottom")+xlab("Year")+ylab("Yield")
+```
+
+
+**Fishing Mortality**
+```{r-f}
+ggplot(subset(p,Scenario!=1))+
+  geom_line(aes(year,harvest,col=Scenario))+
+  facet_wrap(~ref,ncol=1,scale="free_y")+
+  geom_line(aes(year,harvest,col=Scenario),data=subset(p,Scenario==1),col="black")+
+  theme_ms(legend.position="bottom")+xlab("Year")+ylab("Fishing Mortality")
+```
+
+**Plus Group Biomass**
+```{r-pg}
+ggplot(subset(p,Scenario!=1))+
+  geom_line(aes(year,pg,col=Scenario))+
+  facet_wrap(~ref,ncol=1,scale="free_y")+
+  geom_line(aes(year,pg,col=Scenario),data=subset(p,Scenario==1),col="black")+
+  theme_ms(legend.position="bottom")+xlab("Year")+ylab("Plus Group Biomass")
+```
+

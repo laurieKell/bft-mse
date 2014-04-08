@@ -1,0 +1,285 @@
+Performance Measures
+========================================================
+
+
+```{r}
+opts_chunk$set(comment=NA, warning=FALSE, message=FALSE, 
+                           fig.width=8, fig.height=6)
+```
+
+Initialise the OM objects
+---------------------------------------------------------
+```{r}
+library(FLAdvice)
+library(biodyn)
+
+source('~/Desktop/flr/pkg/kobe_V1.3.0/R/kobe-funcs.R')
+source('~/Desktop/flr/pkg/FLAdvice/R/kobe.R')
+
+dirDat="/home/laurie/Desktop/gcode/mse4mfcl/ALB/Data"
+dirMSE="/home/laurie/Desktop/gcode/mse4mfcl/ALB/papers/SCRS/SCRS2013-35/Data"
+dir35 =dirMSE
+
+load(paste(dirMSE,"OMs.RData",  sep="/"))
+load(paste(dirMSE,"BRPs.RData", sep="/"))
+```
+
+Read in data and save as data.frame
+```{r}
+ops =data.frame(ftar=c(0.7,0.7,0.5),btrig =c(0.8,0.6,0.8))
+
+smry=data.frame()
+for (scen in 1:3)
+  for (i in seq(dim(ops)[1])){
+     load(paste(dirMSE,"/mse_",scen,"_",paste(unlist(ops[i,]),collapse="_"),".RData",sep=""))
+     
+     smry=rbind.fill(smry,data.frame(scen=scen,btrig=c(ops[i,"btrig"]),ftar=c(ops[i,"ftar"]),
+                                     kobe(OM,refpts(BRPs[[scen]])["msy"]),
+                                     model.frame(OM[["catch","ssb","fbar"]],drop=T)[,-(1:2)]))
+     }
+
+load(paste(dirMSE,"systemRef.RData",sep="/"))
+for (scen in 1:3)
+     smry=rbind.fill(smry,data.frame(scen=scen,btrig=0,ftar=1,
+                                     kobe(systemRef[[scen]],refpts(BRPs[[scen]])["msy"]),
+                                     model.frame(OM[["catch","ssb","fbar"]],drop=T)[,-(1:2)]))
+
+smry=transform(smry,scen =factor(scen, labels=c("OM1","OM2","OM3")),
+                    Btrig=factor(btrig,labels=c("Btrig=0","0.6","0.8"),       levels=c(0,0.6,0.8)),
+                    Ftar =factor(ftar, labels=c("Fmsy x 1.0","0.7","0.5"),levels=c(1,0.7,0.5)))[,
+                      c("scen","Btrig","Ftar","year","iter","stock","harvest","catch","ssb","fbar","btrig","ftar")]
+
+smry=subset(smry,year>=2000)
+save(smry,file=paste(dirMSE,"/smry.RData",sep=""))
+```
+
+
+Reference points
+```{r}
+# Performance Measures
+# ========================================================
+
+rps=FLPar(aperm(laply(BRPs, function(x) refpts(x)[,1:5]),c(2,3,1)))
+
+## what is the breakpoint (hinge) for a given steepness and recruitment time series?
+hinge=FLPar(array(c(hinge(0.6,c(rps["virgin","ssb"]),laply(OMs,function(x) exp(mean(log(rec(x)),na.rm=T)))),
+                    hinge(0.8,c(rps["virgin","ssb"]),laply(OMs,function(x) exp(mean(log(rec(x)),na.rm=T)))),
+                    hinge(0.9,c(rps["virgin","ssb"]),laply(OMs,function(x) exp(mean(log(rec(x)),na.rm=T))))),
+                 c(3,3),list(OM=1:3,steepness=c(0.6,0.8,0.9))))
+```
+
+
+Worm plots
+--------------------------------------------------------
+Harvest rate
+```{fig10,fig.width=10}
+ggplot(melt(ddply(smry, .(scen,Btrig,Ftar,year), with, quantile(harvest,probs=c(0.25,0.5,0.75))),
+          id=c("scen","Ftar","Btrig","year")))+
+  geom_line(aes(year,value,group=variable))+
+  facet_grid(Btrig~Ftar~scen)+
+  theme_ms(16,legend.position="none")+
+  scale_y_continuous(limits=c(0,2.0),breaks=c(0.0,1.0)) +
+  scale_x_continuous(limits=c(2000,2020),breaks=c(2005,2015)) +
+  geom_line(aes(year,harvest,group=iter,col=iter), data=subset(smry,iter %in% c(21,78,99,123,444)))+
+  ylab(expression(F:F[MSY]))+xlab("Year")
+```
+
+Stock
+```{fig10,fig.width=10}
+ggplot(melt(ddply(smry, .(scen,Btrig,Ftar,year), with, quantile(stock,probs=c(0.25,0.5,0.75))),
+          id=c("scen","Ftar","Btrig","year")))+
+  geom_line(aes(year,value,group=variable))+
+  facet_grid(Btrig~Ftar~scen)+
+  theme_ms(16,legend.position="none")+
+  scale_y_continuous(limits=c(0,4),breaks=c(0,1,2,3)) +
+  scale_x_continuous(limits=c(2000,2020),breaks=c(2005,2015)) +
+  geom_line(aes(year,stock,group=iter,col=iter), data=subset(smry,iter %in% c(21,78,99,123,444)))+
+  ylab(expression(SSB:B[MSY]))+xlab("Year")
+```
+
+Catch
+```{fig11,fig.width=10}
+ggplot(melt(ddply(smry, .(scen,Btrig,Ftar,year), with, quantile(catch,probs=c(0.25,0.5,0.75))),
+      id=c("scen","Ftar","Btrig","year")))+
+  geom_line(aes(year,value/1e3,group=variable))+
+  facet_grid(Btrig~Ftar~scen)+
+  theme_ms(16,legend.position="none")+
+  scale_y_continuous(limits=c(0,4.5e4),breaks=c(0,2e4)) +
+  scale_x_continuous(limits=c(2000,2020),breaks=c(2005,2015)) +
+  geom_line(aes(year,catch/1e3,group=iter,col=iter), data=subset(smry,iter %in% c(21,78,99,123,444)))+
+  ylab("Yield")+xlab("Year")
+```
+
+Time to recovery
+```{fig12,fig.height=4}
+## check if in green quadrant, i.e. recovered
+rcv  =subset(ddply(smry, .(scen,btrig,ftar,iter), transform, recovered=recovered(stock,harvest)),recovered)
+
+## get rid of observations prior to recovery and return 1st year in green, 
+## i.e. time to recovery
+t2rcv=ddply(rcv,.(scen,btrig,ftar,iter), with, data.frame(year=min(year)))
+
+ggplot(subset(t2rcv, !(btrig==0 & ftar==1)))+
+  geom_histogram(aes(year),binwidth=1)+
+  facet_grid(btrig~ftar~scen)+
+  scale_x_continuous(limits=c(2000,2010),breaks=c(2001,2010))+ 
+  theme_ms(16) + ylab("Count")+xlab("Year")
+```
+
+As probability plots
+```{fig13}
+nits=max(as.numeric(smry$iter))
+p2rcv=ddply(t2rcv,.(scen,btrig,ftar,year), with,      data.frame(freq=sum(year/year)))
+p2rcv=ddply(p2rcv,.(scen,btrig,ftar),      transform, prob=cumsum(freq)/nits)
+
+p2rcv=transform(p2rcv,scen =factor(scen, labels=c("OM1","OM2","OM3")),
+                      Btrig=factor(btrig,labels=c("0.0","0.6","0.8"),      levels=c(0,0.6,0.8)),
+                      Fmsy =factor(ftar, labels=c("x 1.0","x 0.7","x 0.5"),levels=c(1,0.7,0.5)))
+
+ggplot(subset(p2rcv, !(btrig==0 & ftar==1)))                        +
+   geom_line( aes(year,prob,col  =Btrig,linetype=Fmsy,
+                            group=paste(Btrig,Fmsy)))               +
+   facet_grid(scen~.)                                               +
+   theme_ms(16,legend.position="bottom")                            +
+   scale_x_continuous(limits=c(2000,2020),breaks=c(2001,2010,2020)) + 
+   ylab("Probability")+xlab("Year")
+```
+
+Sustainability figures with interquartile and medians for performance statistics by scenario and HCR option.
+```{r}
+probs =c(0.25,0.5,0.75)
+
+### Year with 25, 50 & 75% chance of recovery
+tmp=melt(ddply(p2rcv,.(scen,btrig,ftar), with, approxfun(prob,year)(probs)),
+          id=c("scen","btrig","ftar"))
+tmp[is.na(tmp$value),"value"]=2001
+t2r=transform(tmp,Percentile=c("25th","50th","75th")[variable])[,-4]
+
+### Probability of staying in the green zone after recovery
+goRed=subset(rcv, recovered & (stock<1 | harvest>1))
+goRed=ddply(goRed,.(scen,btrig,ftar,iter), with, min(year))
+green=melt(1-with(goRed,table(scen,btrig,ftar))/nits)
+
+### Probability of F>FMSY after recovery
+tmp     =subset(rcv, recovered & (stock<1))
+tmp     =ddply(tmp,.(scen,btrig,ftar,iter), with, min(year))
+oFishing=melt(1-with(tmp,table(scen,btrig,ftar))/nits)
+
+### Probability of B>BMSY after recovery
+tmp    =subset(rcv, recovered & (stock<1))
+tmp    =ddply(tmp,.(scen,btrig,ftar,iter), with, min(year))
+oFished=melt(1-with(tmp,table(scen,btrig,ftar))/nits)
+  
+### Probability of falling below MBal (the minimum biologically acceptable level of
+# spawning biomass; Serchuk and Grainger, 1992),
+
+#http://www.fao.org/docrep/006/X8498E/x8498e0c.htm
+#Bloss
+#Bloss is the smallest spawning biomass observed in the series of annual values of the spawning #biomass (Lowest Observed Spawning Stock).
+  
+#MBAL
+#More satisfactory is the LRP designated as Minimum Biological Acceptable Level, MBAL. In fact, #this LRP is a spawning biomass level below which, observed spawning biomasses over a period of #years, are considered unsatisfactory and the associated recruitments are smaller than the mean or #median recruitment.
+
+bloss=ldply(OMs,function(x) data.frame(Bloss=min(ssb(x),na.rm=TRUE)))
+bloss=transform(bloss,scen=factor(X1,labels=c("OM1","OM2","OM3")))[,-1]
+
+bloss=merge(subset(rcv,recovered),bloss)[,c("scen","btrig","ftar","year","iter","ssb","Bloss")]
+bloss=subset(bloss,ssb>Bloss)
+bloss=ddply(bloss,.(scen,btrig,ftar,iter), with, data.frame(year=min(year)))
+bloss=melt(1-with(bloss,table(scen,btrig,ftar))/nits)
+
+names(t2r)[5]="Quantity"
+t2r$PM="Time to recovery"
+bloss=cbind(bloss,Quantity="Probability",PM="BLoss")
+quad=rbind(cbind(PM="Green",           green),
+           cbind(PM="F>FMSY",          oFishing),
+           cbind(PM="B<BMSY",          oFished))
+quad=cbind(quad,Quantity="Probability")
+
+bio=rbind(quad,bloss,t2r)
+```
+
+
+Economic performance measures
+```{r}
+dR  =0.05
+smry=ddply(smry, .(scen,btrig,ftar,iter), transform, catchD  =dRate(catch,  dR),
+                                                     harvestD=dRate(harvest,dR))
+
+### 0.25, 0,5 and 0.75 probabilities of yield after recovery
+ydR=ddply(rcv,.(scen,btrig,ftar), with, quantile(catch,probs=c(0.25,0.5,0.75)))
+ydR[,4:6]=ydR[,4:6]/max(ydR[,6])
+ydR=cbind(PM="Yield", Measure="Yield",Statistic="Median",ydR)
+
+### 0.25, 0,5 and 0.75 probabilities of yield with 0% discount 
+yd   =ddply(smry, .(scen,btrig,ftar,iter), with, data.frame(catch=sum(catch)))
+yd   =ddply(yd,   .(scen,btrig,ftar),      with, quantile(catch,probs=c(0.25,0.5,0.75)))
+
+### 0.25, 0,5 and 0.75 probabilities of yield with 5% discount 
+yd5  =ddply(smry, .(scen,btrig,ftar,iter), with, data.frame(catch=sum(catchD)))
+yd5  =ddply(yd5,  .(scen,btrig,ftar),      with, quantile(catch,probs=c(0.25,0.5,0.75)))
+yd =rbind(cbind(PM="Yield Total",     Measure="Yield",Statistic="Total",     yd),
+          cbind(PM="Yield Discounted",Measure="Yield",Statistic="Discounted",yd5))
+yd[,7:9]=yd[,7:9]/max(yd[,9])
+
+### 0.25, 0,5 and 0.75 probabilities of effort (F) after recovery
+hvR=ddply(rcv,.(scen,btrig,ftar), with, quantile(harvest,probs=c(0.25,0.5,0.75)))
+hvR[,4:6]=hvR[,4:6]/max(hvR[,6])
+hvR=cbind(PM="Effort", Measure="Effort",Statistic="Median",hvR)
+
+### 0.25, 0,5 and 0.75 probabilities of effort (F)  with 0% discount 
+hv   =ddply(smry, .(scen,btrig,ftar,iter), with, data.frame(harvest=sum(harvest)))
+hv   =ddply(hv,   .(scen,btrig,ftar),      with, quantile(harvest,probs=c(0.25,0.5,0.75)))
+
+### 0.25, 0,5 and 0.75 probabilities of effort (F)  with 5% discount 
+hv5  =ddply(smry, .(scen,btrig,ftar,iter), with, data.frame(harvest=sum(harvestD)))
+hv5  =ddply(hv5,  .(scen,btrig,ftar),      with, quantile(harvest,probs=c(0.25,0.5,0.75)))
+hv =rbind(cbind(PM="Effort Total",     Measure="Effort",Statistic="Total",     hv),
+          cbind(PM="Effort Discounted",Measure="Effort",Statistic="Discounted",hv5))
+hv[,7:9]=hv[,7:9]/max(hv[,9])
+res=rbind(ydR,yd,hvR,hv)
+names(res)[7:9]=c("p25","p50","p75") 
+
+ecn=res
+
+### IAAV in yield
+vr=ddply(subset(rcv, recovered), .(scen,btrig,ftar), 
+         with, data.frame(iaav=iav(catch)),na.rm=T)
+vr=subset(vr,!is.na(iaav) & is.finite(iaav))
+ddply(vr,.(scen,btrig,ftar),with, mean(abs(iaav)))
+### IAAV in effort (F)
+vr=ddply(subset(rcv, recovered), .(scen,btrig,ftar), 
+         with, data.frame(iaav=iav(fbar)),na.rm=T)
+vr=subset(vr,!is.na(iaav) & is.finite(iaav))
+ddply(vr,.(scen,btrig,ftar),with, mean(abs(iaav)))
+```
+
+Economic
+```{fig14}
+ecn=transform(ecn,HCR=factor(factor(paste("Btrig=",btrig," Ftar=",ftar,sep=""))))
+ggplot(ecn)+geom_errorbar(aes(x=HCR,ymin=p25,ymax=p75),width=.2)+
+            geom_point(   aes(x=HCR,y=p50))+
+            facet_grid(Measure~Statistic~scen,scale="free")+
+            theme_ms(16)+theme(axis.text.x=element_text(angle=60,hjust=1)) +
+            scale_y_continuous(breaks=c(0.5), limits=c(0,1.1)) +
+            ylab("Relative Values") + xlab("HCR")
+```
+
+Sustainability
+```{fig15}
+bio=transform(bio,HCR=factor(factor(paste("Btrig=",btrig," Ftar=",ftar,sep=""))))
+ggplot(subset(bio,PM!="Time to recovery"))+
+            geom_point(aes(HCR,value))+
+            facet_grid(PM~scen)+
+            theme_ms(16)+theme(axis.text.x=element_text(angle=60,hjust=1)) +
+            scale_y_continuous(limits=c(0,1.1),breaks=c(0.5,1.0)) +
+            ylab("Propbability") + xlab("HCR")
+```
+
+steepness limits
+```{r}
+1/sweep(hinge,1, daply(subset(smry, year==2000), .(scen), with, min(ssb)),"/")
+
+refpt["msy","ssb",drop=T]/refpt["virgin","ssb",drop=T]
+```
+

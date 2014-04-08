@@ -1,0 +1,154 @@
+Bluefin Tuna MSE
+========================================================
+  
+```{r, echo=FALSE}
+opts_chunk$set(comment=NA, 
+               fig.width =8, 
+               fig.height=6,
+               fig.path  ="../tex/om",
+               warning=FALSE, 
+               message=FALSE, 
+               error  =FALSE, 
+               echo   =FALSE,
+               cache  =FALSE)
+```
+
+```{r}
+library(FLCore)
+library(kobe)
+library(diags)
+library(biodyn)
+library(FLBRP)
+library(ggplotFL)
+library(popbio)
+
+dirMy  ="/home/laurie/Desktop/redbook/bft"
+
+dirDat=paste(dirMy,"data",sep="/")
+
+scn=expand.grid(Catch         =c("inflated","reported"),
+                Recruitment   =c("low","med","high"),
+                stringsAsFactors=FALSE)
+```
+
+
+```{r}
+load(OM,   file=paste(dirDat,   "OM.RData",sep="/"))
+load(brp,  file=paste(dirDat,  "brp.RData",sep="/"))             
+load(srDev,file=paste(dirDat,"srDev.RData",sep="/"))             
+```
+
+**Constant catch Projections**
+```{r}
+OM[["reported"]]=fwdWindow(OM[["reported"]],end=2030,brp[["reported"]])
+prj=fwd(OM[["reported"]],catch=FLQuant(1000*13000,dimnames=list(year=2012:2030)),
+                         sr   =brp[["reported"]],
+                         sr.residuals=srDev[[1]])
+```
+
+**ASPIC HCR**
+```{r}
+mseBiodyn<-function(OM,start,brp,
+                    srRsdl=FLQuant(1,dimnames=dimnames(window(rec(OM),start=start))),
+                    Ftar =0.75,    Btrig=0.75,
+                    Fmin =Ftar*0.1,Blim =Btrig*0.0001,
+                    Bpct =0.5,     Fpct =0.5,
+                    bounds=NULL,
+                    CV    =0.1, fishDepend=TRUE){
+  
+  ## Get number of iterations in OM
+  nits=c(OM=dims(OM)$iter, sr=dims(params(brp))$iter, rsdl=dims(srRsdl)$iter)
+  if (length(unique(nits))>=2 & !(1 %in% nits)) ("Stop, iters not '1 or n' in OM")
+  nits=max(nits)
+  stock(OM)=propagate(stock(OM),nits)
+
+  #### Observation Error (OEM) setup #######################
+  ## Random variation for Catch & CPUE, CV=0.25%
+  bd        =biodyn(OM)
+  params(bd)=propagate(params(bd),nits)
+  params(bd)["k"]=refpts(brp)["virgin","biomass"]*2
+ 
+  #params(bd)["k"]=5.0e+09  
+  #params(bd)["r"]= log(lambda(leslie(brp,c(refpts(brp)["crash","harvest"]))))
+  
+  params(bd)["b0"]=.9
+
+  params(bd)["r"]=0.3
+    
+  bd@mng=FLPar(a=1) 
+  bd       =propagate(bd,nits)
+
+  if (fishDepend) cpue=catch(OM)/fbar(OM) else cpue=stock(OM)
+  cpue=cpue/mean(cpue,na.rm=T)
+  cpue=cpue/sd(cpue,na.rm=T)
+  cpue=cpue*rlnorm(dim(cpue)[6],0,CV)
+  setParams( bd)<-cpue
+  setControl(bd)=params(bd)
+  bd@control[c("p","b0"),"phase"][]=-1
+  
+  if (!is.null(bounds)) bd@bounds=bounds
+  ## Loop round years
+  
+  for (iYr in start:(range(OM,"maxyear")-2)){
+  #iYr = (start:(range(OM,"maxyear")-2))[1]
+     cat("===================", iYr, "===================\n")
+     ## add year to FLBD
+     bd                 =window(bd,  end=iYr)
+     cpue               =window(cpue,end=iYr)
+     catch(bd)[,ac(iYr)]=computeCatch(OM)[,ac(iYr)]
+     
+     bd =fit(bd,cpue)
+ 
+     hv =hcr(bd,FLPar(Ftar=Ftar,Btrig=Btrig,Fmin=Fmin,Blim=Blim)) 
+#    return(list(bd,cpue))
+     
+     TAC=tac(bd,hv)
+   
+     #### Now you have TAC take it from OM
+     ctrl    <-fwdControl(data.frame(year=iYr+2,max=c(NA,2),quantity=c("catch","f")))
+     dms     <-dimnames(ctrl@trgtArray)
+     dms$iter<-1:nits
+     ctrl@trgtArray<-array(NA,lapply(dms,length),dms)
+     ctrl@trgtArray[1,"val", ]<-TAC
+     ctrl@trgtArray[2,"max", ]<-.99
+   
+     OM <-fwd(OM,ctrl=ctrl,sr=brp,sr.residuals=srRsdl)
+     print(iYr)
+     }
+
+   return(list(OM=OM,MP=bd,cpue=cpue))}
+```
+
+```{r}
+OM =OM[[1]]
+brp=brp(brp[[1]])
+```
+
+```{r}
+res=mseBiodyn(OM,2010,brp=brp,CV=.1)
+
+p=ggplot(as.data.frame(mcf(FLQuants(MP=stock(res[[2]])%/%bmsy(res[[2]]),
+                                    OM=stock(res[[1]])%/%refpts(Brp[[1]])["msy","biomass"])),drop=T))
+p+geom_line(aes(year,data,group=iter))+facet_wrap(~qname)
+```
+
+```{r}
+plot(FLStocks("MSE"=res$OM,"4B"=OM))
+```
+```
+
+**SBT1 HCR**
+```{r}
+OM[["reported"]]=fwdWindow(OM[["reported"]],end=2030,brp[["reported"]])
+prj=fwd(OM[["reported"]],catch=FLQuant(1000*13000,dimnames=list(year=2012:2030)),
+                         sr   =brp[["reported"]],
+                         sr.residuals=srDev[[1]])
+```
+
+**SBT2 HCR**
+```{r}
+OM[["reported"]]=fwdWindow(OM[["reported"]],end=2030,brp[["reported"]])
+prj=fwd(OM[["reported"]],catch=FLQuant(1000*13000,dimnames=list(year=2012:2030)),
+                         sr   =brp[["reported"]],
+                         sr.residuals=srDev[[1]])
+```

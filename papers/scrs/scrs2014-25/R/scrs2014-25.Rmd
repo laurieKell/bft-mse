@@ -1,0 +1,325 @@
+SCRS 2014, stk recruit analysis
+========================================================
+
+```{r, echo=FALSE}
+opts_chunk$set(comment   =NA, 
+               fig.width =8, 
+               fig.height=6,
+               fig.path  ="../tex/figs/sr",
+               eval      =TRUE, 
+               echo      =FALSE, 
+               warning   =FALSE, 
+               message   =FALSE, 
+               error     =FALSE,
+               cache     =FALSE)
+```
+
+**set up paths and scenarios etc.** 
+```{r}
+library(FLCore)
+library(FLBRP)
+library(kobe)
+library(plyr)
+library(R4MFCL)
+source('~/Desktop/flr/git/FLR3.0/FLCore/R/io.VPA2Box.R')
+```
+
+```{r,cache=TRUE}
+## Dirs for paper 
+paste.dir=function(dir,file) paste(dir,file,sep="/")
+dirKobe="/home/laurie/Desktop/ICCAT/SCRS/kobe/Inputs"
+dirMy  ="/home/laurie/Desktop/scrs2014/scrs2014-25"
+dirDat =paste.dir(dirMy,"data")
+
+source('~/Desktop/flr/git/FLR3.0/FLCore/R/io.VPA2Box.R')
+
+sCode=c("albn","bfte","bftw","bum","whm","yft")
+stks=data.frame(stock=c("North Atlantic\n Albacore",
+                        "East Atlantic and Mediterranean\n Bluefin Tuna",
+                        "West Atlantic\n Bluefin Tuna",
+                        "Blue Marlin",
+                        "White Marlin",
+                        "Yellowfin Tuna"),
+                year=c(2013,2012,2012,2011,2012,2011),
+                assess=c("mfcl","vpa","vpa","ss","ss","vpa"))
+
+scen=data.frame(rbind(cbind(stk="albn",scen=c(paste("alt",1:8,sep=""),"base","mother","tag")),
+                      cbind(stk="bfte",scen=c("reported","inflated")),
+                      cbind(stk="bftw",scen=c("bevholt")),
+                      cbind(stk="bum", scen=c("run1")),
+                      cbind(stk="whm", scen=c("run1")),
+                      cbind(stk="yft",scen=c("run5","run10"))))
+
+scen=transform(cbind(stks[scen[,"stk"],],scen),
+               dir=paste(dirKobe,stk,year,assess,scen,sep="/"))
+
+save(scen,file="/home/laurie/Desktop/scrs2014/scrs2014-25/data/scen.RData")
+```
+
+
+**Get time series**
+```{r,cache=TRUE}
+scen=subset(scen, !(stk %in% c("bum","whm")))
+
+sr=mdply(scen[1:13,c("dir","assess","scen","stk")], function(dir,assess,scen,stk){
+     
+    m=c(0.49, 0.24, 0.24, 0.24, 0.24, 0.20,0.175,0.15, 0.125,0.10)
+  
+    stk=switch(assess,
+             "mfcl"=readMFCL(paste(dir,c("final.par","plot.rep"),sep="/")),
+             "ss"  =NULL,
+             "vpa" =readVPA2Box(paste(dir,"vpa.c1",sep="/"),m=m))
+      
+      sr =fmle(as.FLSR(stk,model="bevholt"))
+      br =brp(FLBRP(stk,sr))
+    
+      model.frame(sr[["rec","ssb"]],drop=T)
+      })[,c("assess","scen","stk","year","rec","ssb")]
+
+
+tmp=cbind("scen"="bevholt",stk="bftw",
+          read.table("/home/laurie/Desktop/scrs2014/scrs2014-25/Inputs/sr.txt"))
+names(tmp)[3:5]=c("year","ssb","rec")
+
+sr.=mdply(scen[15:16,c("dir","scen","stk")], 
+          function(dir,scen,stk) read.table(paste(dir,"sr.txt",sep="/")))[,-1]
+names(sr.)=c("scen","stk","year","ssb","rec")
+
+sr=rbind.fill(sr,cbind(assess="vpa",rbind(sr.,tmp)))
+rm(tmp,sr.)
+```
+
+
+```{r}
+sr=merge(sr,scen[c(9,12:15),c("scen","stk")])
+sr=sr[do.call(order,sr[,c("stk","scen","year")]),]
+sr=transform(sr,stk=stks[stk,"stock"])
+sr[sr[,"scen"]!="inflated","scen"]=as.factor("")
+
+save(sr,file=paste.dir(dirDat,"sr.RData"))
+```
+
+**Recruits**
+```{r-rec}
+ggplot(sr)+
+    geom_line(aes(year,rec, group=scen,col=scen))+
+    geom_point(aes(year,rec,group=scen,col=scen))+
+    facet_grid(stk~.,scale="free")+
+    theme_ms(legend.position="none")+
+    xlab("Year")+ylab("Recruitment")
+```
+
+**SSB**
+```{r-ssb}
+ggplot(sr)+
+    geom_line(aes(year,ssb, group=scen,col=scen))+
+    geom_point(aes(year,ssb,group=scen,col=scen))+
+    facet_grid(stk~.,scale="free")+
+    theme_ms(legend.position="none")+
+    xlab("Year")+ylab("SSB")
+```
+
+
+**ACF**
+```{r-acf-rec,fig.height=6}
+acf=ddply(sr,.(scen,stk), function(x) {
+      rec=subset(x,!is.na(rec))$rec
+      acf(rec,plot=F,lag.max=21)$acf})
+acf=melt(acf,id=c("stk","scen"))
+acf=transform(acf,lag=as.numeric(variable)-1)
+ps=ddply(subset(sr,!is.na(rec)),.(stk,scen),
+         function(x) {
+           rec=subset(x,!is.na(rec))$rec
+           qnorm(1-0.05/2)/(length(rec))^0.5} )
+
+ggplot(acf)+
+    geom_errorbar(aes(x=lag,ymax=as.numeric(value),ymin=0,group=scen,col=scen),
+                           width=0.2,position=position_dodge(width=0.5)) +
+    geom_hline(aes(yintercept=  0), col="grey25") +
+    geom_hline(aes(yintercept= V1),  data=ps,linetype=2,col="blue") +
+    geom_hline(aes(yintercept=-V1),  data=ps,linetype=2,col="blue") +
+    #scale_x_continuous(breaks=seq(1,12,1)) +
+    #scale_y_continuous(limits=c(-0.8,0.8),breaks=seq(-0.5,0.5,.5)) +
+    theme_ms(16,legend.position="none")+
+    xlab("Lag")+ylab("ACF")+
+    facet_wrap(~stk)
+```
+
+**CCF**
+-------------------------------------------
+```{r-cc-sr}
+par(mfrow=c(3,2),mar=c(2,2,2,1))
+
+sr.=subset(sr, stk!="Yellowfin Tuna" | (stk=="Yellowfin Tuna" & year>=1980))
+
+cc1=dlply(subset(sr.,!is.na(rec)&!is.na(ssb)),.(stk,scen), function(x) {
+  res=ccf(order(x$ssb),order(x$rec),lag.max=21)$acf
+  mtext(paste(unique(x$stk),unique(x$scen)))
+  return(res)})
+```
+
+```{r-cc-sr2,echo=FALSE,fig.height=6}
+ccf=ddply(subset(sr.,!is.na(ssb)),.(stk,scen), 
+      function(x) c(ccf(order(x$ssb),order(x$rec),lag.max=21,plot=FALSE)$acf))[,-4]
+
+ccf=melt(ccf,id=c("stk","scen"))
+ccf=transform(ccf,lag=as.numeric(variable)-22)
+
+ps=ddply(subset(sr.,!is.na(ssb)),.(stk,scen),
+         function(x) qnorm(1-0.05/2)/(length(x$ssb))^0.5 )
+
+ggplot(ccf)+
+    geom_errorbar(aes(x=lag,ymax=as.numeric(value),ymin=0,group=scen,col=scen),
+                           width=0.2,position=position_dodge(width=0.5)) +
+    geom_hline(aes(yintercept=  0), col="grey25") +
+    geom_hline(aes(yintercept= V1),  data=ps,linetype=2,col="blue") +
+    geom_hline(aes(yintercept=-V1),  data=ps,linetype=2,col="blue") +
+    #scale_x_continuous(breaks=seq(1,12,1)) +
+    #scale_y_continuous(limits=c(-0.8,0.8),breaks=seq(-0.5,0.5,.5)) +
+    theme_ms(16,legend.position="none")+
+    xlab("Lag")+ylab("CCF")+
+    facet_wrap(~stk)
+```
+
+
+**STARS**
+```{r-stars-rec}
+source('/home/laurie/Ubuntu One/papers/submitted/3stocks/R/regimeShift.R')
+
+par(mfrow=c(3,2),mar=c(2,2,4,1))
+
+rsRec=ddply(subset(sr,!is.na(rec)), .(scen,stk),  function(x){
+     res=rod(x$rec/max(x$rec),x$year)
+     mtext(unique(x$stk),paste(unique(x$scen)))
+     res})
+
+save(rsRec,file="/home/laurie/Desktop/scrs2014/scrs2014-25/data/rsRec.RData")
+```
+
+```{r-stars-rec2,fig.width=14,fig.height=8}
+pg=ddply(rsRec,.(scen,stk),
+             function(dat) data.frame(i=dat$i,
+                                      x=with(dat,c(minyear,minyear,maxyear,maxyear)),
+                                      y=with(dat,c(mn+sd,  mn-sd,  mn-sd,  mn+sd))))
+
+ggplot(ddply(sr,.(scen,stk), transform, rec=rec/max(rec,na.rm=T)))+
+  geom_path( aes(year,rec,col=scen,group=scen))+
+#  scale_x_continuous(breaks=seq(0,3000,10)) +
+#  scale_y_continuous(breaks=c(0,5,10)) +
+  facet_wrap(~stk,scale="free_y",ncol=2) +
+  ylab("Recruits") + xlab("Year") +
+  theme_ms(16, legend.position="none",axis.title=element_text(size=10, vjust=0.5))+
+  geom_polygon(aes(x,y,group=paste(i,scen),col=scen),data=pg,alpha=.2,fill="lavender")
+```
+
+
+```{r-stars-ssb}
+par(mfrow=c(3,2),mar=c(2,2,4,1))
+
+rsSsb=ddply(subset(sr,!is.na(ssb)), .(scen,stk),  function(x){
+     res=rod(x$ssb/max(x$ssb),x$year)
+     mtext(unique(x$stk),paste(unique(x$scen)))
+     res})
+```
+
+```{r-stars-ssb2,fig.width=14,fig.height=8}
+pg=ddply(rsSsb,.(scen,stk),
+             function(dat) data.frame(i=dat$i,
+                                      x=with(dat,c(minyear,minyear,maxyear,maxyear)),
+                                      y=with(dat,c(mn+sd,  mn-sd,  mn-sd,  mn+sd))))
+
+ggplot(ddply(sr,.(scen,stk), transform, ssb=ssb/max(ssb,na.rm=T)))+
+  geom_path( aes(year,ssb,col=scen,group=scen))+
+#  scale_x_continuous(breaks=seq(0,3000,10)) +
+#  scale_y_continuous(breaks=c(0,5,10)) +
+  facet_wrap(~stk,scale="free_y",ncol=2) +
+  ylab("Recruits") + xlab("Year") +
+  theme_ms(16, legend.position="none",axis.title=element_text(size=10, vjust=0.5))+
+  geom_polygon(aes(x,y,group=paste(i,scen),col=scen),data=pg,alpha=.2,fill="lavender")
+```
+
+Non-Parametric Stock Recruit Relationships
+-----------------------
+**Non-Parametric**
+```{r-np-sr,fig.height=8,fig.width=8}
+np=ddply(subset(sr,!is.na(rec) & !is.na(ssb)), .(stk,scen), function(x){         
+         Recruits=x$rec/max(x$rec)
+         SRP     =x$ssb/max(x$ssb)
+         data.frame(
+         year      =x$year,
+         Recruits  =Recruits,
+         SRP       =SRP,
+         RecruitHat=exp(predict( loess(log(Recruits)~SRP,span=1,method="loess"))),
+         Residuals=    residuals(loess(log(Recruits)~SRP,span=1,method="loess")))})
+
+ggplot(np)+
+  geom_point( aes(SRP,Recruits,  group=scen, col=scen))+
+  geom_path(  aes(SRP,Recruits,  group=scen),col="grey")+
+  geom_line(  aes(SRP,RecruitHat,group=scen,col=scen),size=1.5)+
+  facet_wrap(~stk,scale="free")+
+  theme_ms(16, axis.title=element_text(size=12, vjust=0.5),legend.position="none")+
+  xlab("SSB")+ylab("Recruits")
+```
+
+**Residuals v  Year**
+```{r-np-rsd,fig.height=6,fig.width=14}
+ggplot(np)+
+  geom_hline(aes(yintercept=0))+
+  geom_point( aes(year,Residuals,group=scen,col=scen))+
+  geom_smooth(aes(year,Residuals,group=scen,col=scen),span=1,method="loess",size=1.25)+
+  facet_wrap(~stk,scale="free_y",ncol=2)+
+  theme_ms(16, axis.title=element_text(size=12, vjust=0.5),legend.postion="none")+
+  xlab("Year")+ylab("Residuals")
+```
+
+**ACF**
+```{r-acf-rsd,fig.height=6}
+acf=ddply(np,.(scen,stk), function(x) {
+      Residuals=subset(x,!is.na(Residuals))$Residuals
+      acf(Residuals,plot=F,lag.max=21)$acf})
+acf=melt(acf,id=c("stk","scen"))
+acf=transform(acf,lag=as.numeric(variable)-1)
+ps=ddply(subset(sr,!is.na(rec)),.(stk,scen),
+         function(x) {
+           rec=subset(x,!is.na(rec))$rec
+           qnorm(1-0.05/2)/(length(rec))^0.5} )
+
+ggplot(acf)+
+    geom_errorbar(aes(x=lag,ymax=as.numeric(value),ymin=0,group=scen,col=scen),
+                           width=0.2,position=position_dodge(width=0.5)) +
+    geom_hline(aes(yintercept=  0), col="grey25") +
+    geom_hline(aes(yintercept= V1),  data=ps,linetype=2,col="blue") +
+    geom_hline(aes(yintercept=-V1),  data=ps,linetype=2,col="blue") +
+    #scale_x_continuous(breaks=seq(1,12,1)) +
+    #scale_y_continuous(limits=c(-0.8,0.8),breaks=seq(-0.5,0.5,.5)) +
+    theme_ms(16,legend.position="none")+
+    xlab("Lag")+ylab("ACF")+
+    facet_wrap(~stk)
+```
+
+
+**STARS**
+```{r-stars-rsdl}
+par(mfrow=c(3,2),mar=c(2,2,4,1))
+
+rsRsdl=ddply(subset(np,!is.na(Residuals)), .(scen,stk),  function(x){
+     Residuals=rod(x$Residuals/max(x$Residuals),x$year)
+     mtext(unique(x$stk),paste(unique(x$scen)))
+     Residuals})
+```
+
+```{r-stars-rsdl2,fig.width=14,fig.height=8}
+pg=ddply(rsRsdl,.(scen,stk),
+             function(dat) data.frame(i=dat$i,
+                                      x=with(dat,c(minyear,minyear,maxyear,maxyear)),
+                                      y=with(dat,c(mn+sd,  mn-sd,  mn-sd,  mn+sd))))
+
+ggplot(ddply(np,.(scen,stk), transform, Residuals=Residuals/max(Residuals,na.rm=T)))+
+  geom_path( aes(year,Residuals,col=scen,group=scen))+
+#  scale_x_continuous(breaks=seq(0,3000,10)) +
+#  scale_y_continuous(breaks=c(0,5,10)) +
+  facet_wrap(~stk,scale="free_y",ncol=2) +
+  ylab("Residuals") + xlab("Year") +
+  theme_ms(16, legend.position="none",axis.title=element_text(size=10, vjust=0.5))+
+  geom_polygon(aes(x,y,group=paste(i,scen),col=scen),data=pg,alpha=.2,fill="lavender")
+```

@@ -1,0 +1,184 @@
+  Title
+========================================================
+
+```{r}
+opts_chunk$set(comment=NA, fig.width=8, fig.height=6, warning=FALSE, message=FALSE)
+```
+
+```{r}
+library(FLAdvice)
+library(biodyn)
+library(popbio)
+```
+
+
+```{r, eval=TRUE}
+hcr=  function(object, params=FLPar(Ftar=0.8,  Btrig=0.75, Fmin=0.025, Blim=0.25),
+                        msy   =    c(Ftar=TRUE, Btrig=TRUE, Fmin=TRUE,  Blim=TRUE),
+                        refpt ="missing",
+                        bndTac=NULL, bndF=NULL,lag=1,...){
+
+  if (dims(params)$iter==1 & dims(refpts(object))$iter>1)
+         params=propagate(params,dims(refpts(object))$iter)
+      ## Reference Points
+      if (refpt=="missing")
+         refpt=refpts(object)
+
+      if (msy["Btrig"]) params["Btrig"]=refpt["bmsy"]*params["Btrig"]
+      if (msy["Blim"])  params["Blim"] =refpt["bmsy"]*params["Blim"]
+      if (msy["Fmin"])  params["Fmin"] =refpt["fmsy"]*params["Fmin"]
+      if (msy["Ftar"])  params["Ftar"] =refpt["fmsy"]*params["Ftar"]
+
+      ## HCR
+      #if (Blim>=Btrig) stop("Btrig must be greater than Blim")
+      a=(params["Ftar"]-params["Fmin"])/(params["Btrig"]-params["Blim"])
+      b= params["Ftar"]-a*params["Btrig"]
+
+      ## Calc F
+      #SSB =apply(stock(object)[,ac(as.numeric(dims(object)$year-lag))],6,sum)
+      yrTac=dims(catch(object))$maxyear+1
+      yrRef=ac(yrTac-lag)
+      yrTac=ac(yrTac)
+
+
+      SSB =apply(stock(object)[,yrRef],6,sum)
+#print("bug")
+#return(list("SSB"=SSB,"a"=a,"b"=b))
+# bug
+      #val=(SSB%*%a) %+% b
+      val=sweep((SSB%*%a),6,b,"+")
+#print("bug")
+#print(val)
+
+      for (i in seq(dim(val)[6])){
+        val[,,,,,i]=max(val[,,,,,i],params["Fmin",min(dim(params)[2],i)])
+        val[,,,,,i]=min(val[,,,,,i],params["Ftar",min(dim(params)[2],i)])}
+
+      dimnames(val)$year=yrTac
+
+      return(val)}
+
+#   object=biodyn("pellat",FLPar(r=.5,k=10000))
+hcrFn=function(object,par=FLPar(Ftar=0.7, Btrig=0.8, Fmin=0.025, Blim=0.20) ,maxB=1){
+  
+  pts=rbind(cbind(refpt="Target",model.frame(rbind(bmsy(object)*c(par["Btrig"]),
+                                                   fmsy(object)*c(par["Ftar"])))),
+            cbind(refpt="Limit", model.frame(rbind(bmsy(object)*c(par["Blim"]),
+                                                   fmsy(object)*c(par["Fmin"])))))
+  pts.=pts
+  pts.[1,"bmsy"]=params(object)["k"]*maxB
+  pts.[2,"bmsy"]=0
+  pts.[,1]=c("")
+  
+  pts=rbind(pts.[1,],pts[1:2,],pts.[2,])
+  
+  names(pts)[2:3]=c("biomass","harvest")
+  pts[,"biomass"]=pts[,"biomass"]/bmsy(object)
+  pts[,"harvest"]=pts[,"harvest"]/fmsy(object)
+  
+  pts}
+```
+
+MSE Code
+```{r}
+mseBiodyn<-function(OM,start,
+                      brp,srRsdl=FLQuant(1,dimnames=dimnames(window(rec(OM),start=start))),
+                      CV   =0.1,
+                      Ftar =0.75,    Btrig=0.75,
+                      Fmin =Ftar*0.1,Blim =Btrig*0.0001,
+                      Bpct =0.5,     Fpct =0.5,
+                      jk    =FALSE,
+                      bounds=NULL,
+                      fishDepend=TRUE){
+  
+  ## Get number of iterations in OM
+  nits=c(OM=dims(OM)$iter, sr=dims(params(brp))$iter, rsdl=dims(srRsdl)$iter)
+  if (length(unique(nits))>=2 & !(1 %in% nits)) ("Stop, iters not '1 or n' in OM")
+  nits=max(nits)
+  stock(OM)=propagate(stock(OM),nits)
+
+  #### Observation Error (OEM) setup #######################
+  ## Random variation for Catch & CPUE, CV=0.25%
+  bd       =biodyn(OM)
+  params(bd)["k"]= refpts(brp)["virgin","biomass"]*2
+ 
+  params(bd)["k"]=5.0e+09
+    
+  params(bd)["r"]= log(lambda(leslie(brp,c(refpts(brp)["crash","harvest"]))))
+  params(bd)["b0"]=.9
+
+  params(bd)["r"]=0.3
+    
+  bd@mng=FLPar(a=1) 
+  bd       =propagate(bd,nits)
+
+  if (fishDepend) cpue=catch(OM)/fbar(OM) else cpue=stock(OM)
+  cpue=cpue/mean(cpue,na.rm=T)
+  cpue=cpue/sd(cpue,na.rm=T)
+  cpue=cpue*rlnorm(dim(cpue)[6],0,CV)
+  setParams( bd)<-cpue
+  setControl(bd)=params(bd)
+  control(bd)[c("p","b0"),"phase"][]=-1
+  
+  if (!is.null(bounds)) bd@bounds=bounds
+  ## Loop round years
+  
+  for (iYr in start:(range(OM,"maxyear")-2)){
+  #iYr = (start:(range(OM,"maxyear")-2))[1]
+     cat("===================", iYr, "===================\n")
+     ## add year to FLBD
+     bd                 =window(bd,  end=iYr)
+     cpue               =window(cpue,end=iYr)
+     catch(bd)[,ac(iYr)]=computeCatch(OM)[,ac(iYr)]
+     
+     if (jk){
+      hv =hcrJK(bd,Ftar,Btrig,Fmin,Blim,Fpct,Bpct) 
+     }else{ 
+      bd =fit(bd,cpue)
+ 
+      hv =hcr(bd,FLPar(Ftar=Ftar,Btrig=Btrig,Fmin=Fmin,Blim=Blim)) 
+#     return(list(bd,cpue))
+      }
+     
+     TAC=tac(bd,hv)
+   
+     #### Now you have TAC take it from OM
+     ctrl    <-fwdControl(data.frame(year=iYr+2,max=c(NA,2),quantity=c("catch","f")))
+     dms     <-dimnames(ctrl@trgtArray)
+     dms$iter<-1:nits
+     ctrl@trgtArray<-array(NA,lapply(dms,length),dms)
+     ctrl@trgtArray[1,"val", ]<-TAC
+     ctrl@trgtArray[2,"max", ]<-.99
+   
+     OM <-fwd(OM,ctrl=ctrl,sr=brp,sr.residuals=srRsdl)
+     print(iYr)
+     }
+
+   return(list(OM=OM,MP=bd,cpue=cpue))}
+```
+
+```{r}
+dirDat="/home/laurie/Desktop/gcode/mse4mfcl/ALB/Data"
+
+load(paste(dirDat,"OM.RData", sep="/"))
+load(paste(dirDat,"Brp.RData", sep="/"))
+
+OM=OM[[1]]
+brp=Brp[[1]]
+
+brp=brp(brp)
+```
+
+```{r}
+OM=propagate(window(OM,start=1960),10)
+
+res=mseBiodyn(OM,2000,brp=brp,CV=.1)
+
+p=ggplot(as.data.frame(mcf(FLQuants(MP=stock(res[[2]])%/%bmsy(res[[2]]),
+                                    OM=stock(res[[1]])%/%refpts(Brp[[1]])["msy","biomass"])),drop=T))
+p+geom_line(aes(year,data,group=iter))+facet_wrap(~qname)
+```
+
+```{r}
+plot(FLStocks("MSE"=res$OM,"4B"=OM))
+```

@@ -1,0 +1,71 @@
+Risk paper II
+========================================================
+
+```{r, echo=FALSE}
+opts_chunk$set(comment=NA, 
+               fig.width =8, 
+               fig.height=6,
+               fig.path  ="../figs/om",
+               warning=FALSE, 
+               message=FALSE, 
+               error  =FALSE, 
+               echo   =FALSE,
+               cache  =FALSE)
+```
+
+
+```{r}
+library(FLCore)
+library(kobe)
+library(diags)
+library(FLBRP)
+library(ggplotFL)
+
+source('~/Desktop/flr/git/FLR3.0/FLCore/R/io.VPA2Box.R')
+source('~/Desktop/flr/git/FLBRP/R/FLBRP-constructors.R')
+
+## Dirs for paper 
+dirMy ="/home/laurie/Desktop/Dropbox/collaboration/lapolad"
+dirDat=paste(dirMy,"data",sep="/")
+
+## Dirs with assessment results 
+dirKobe="/home/laurie/Desktop/ICCAT/SCRS/kobe/Inputs/bfte/2012/vpa"
+```
+
+```{r}
+scn=expand.grid(Catch         =c("inflated","reported"),
+                Recruitment   =c("low","med","high"),
+                stringsAsFactors=FALSE)
+
+m  =c(0.49, 0.24, 0.24, 0.24, 0.24, 0.20,0.175,0.15, 0.125,0.10)
+fls=mdply(scn[1:2,],function(Catch,Recruitment) 
+  paste(dirKobe,Catch,Recruitment,"bfte2012.c1",sep="/"))[,3]
+OM =FLStocks(mlply(fls,readVPA2Box,m=m))
+
+names(OM)=unlist(scn[1])
+
+save(OM,file=paste(dirDat,"OM.RData",sep="/"))
+```
+
+
+**Operating Models based on 2012 assessment**
+```{r}
+plot(OM)
+```
+
+**Reference Points**
+```{r}
+fls=mdply(scn,function(Catch,Recruitment) 
+  paste(dirKobe,Catch,Recruitment,sep="/"))[,3]
+rpt=FLPars(mlply(fls,function(x) FLBRP(x)[,1:4]))
+
+save(rpt,file=paste(dirDat,"rpt.RData",sep="/"))
+```
+  
+**Kobe**
+```{r}
+kb=kobe(fls,"2box")
+
+save(kb,file=paste(dirDat,"kb.RData",sep="/"))
+```
+

@@ -1,0 +1,58 @@
+Risk paper II
+========================================================
+
+```{r, echo=FALSE}
+opts_chunk$set(comment=NA, 
+               fig.width =8, 
+               fig.height=6,
+               fig.path  ="../figs/om",
+               warning=FALSE, 
+               message=FALSE, 
+               error  =FALSE, 
+               echo   =FALSE,
+               cache  =FALSE)
+```
+
+```{r}
+library(FLCore)
+library(kobe)
+library(diags)
+library(FLBRP)
+library(ggplotFL)
+library(FLMethLen)
+library(FLsz)
+library(FLAssess)
+
+## Dirs for paper 
+dirMy ="/home/laurie/Desktop/Dropbox/collaboration/lapolad"
+dirDat=paste(dirMy,"data",sep="/")
+
+par =gislasim(FLPar(linf=318.85*.96,k=0.093,t0=-0.97-.16667,a=1.96e-5,b=3.0092,ar=4.0))
+lhBr=lh(par)
+
+scn=expand.grid(Catch           =c("inflated","reported"),
+                Recruitment     =c("low","med","high"),
+                stringsAsFactors=FALSE)
+
+load(paste(dirDat,"OM.RData", sep="/"))
+load(paste(dirDat,"rpt.RData",sep="/"))
+load(paste(dirDat,"kb.RData", sep="/"))
+
+names(OM)=c("Inflated","Reported")
+OM[["Inflated"]]=iter(OM[["Inflated"]],1)
+OM[["Reported"]]=iter(OM[["Reported"]],1)
+```
+
+**Main effects**
+```{r}
+ALK       =rbind(Linf     =cbind(Linf=c(0.75,1,1.25),k=1),
+                 k        =cbind(Linf=1,k=c(0.75,1,1.25)))
+
+mn=wt2len(par,stock.wt(om))
+sd=mn*.2
+md=mixnorm(mn,sd,seq(50,300,1))
+ggplot(as.data.frame(md))+
+  geom_line(aes(len,data,group=age))+
+  facet_wrap(~year)
+```
+

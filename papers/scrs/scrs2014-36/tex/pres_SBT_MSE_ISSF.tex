@@ -1,0 +1,525 @@
+\documentclass{beamer}
+\usepackage{beamerthemesplit}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\eps}{\epsilon}
+\newcommand{\veps}{\varepsilon}
+\newcommand{\wh}{\widehat}
+\usetheme{Berkeley}
+\usecolortheme{dolphin}
+\title{The CCSBT MP process (nice idea but how do you get it adopted and implemented?)}
+\author{Too many to mention (but some are in the room): the member scientists and indepedent panel of the CCSBT SC}
+\begin{document}
+\maketitle
+% frame 1
+\begin{frame}
+\frametitle{Talk outline}
+\begin{itemize}
+    \item Getting OM structure defined \& agreed
+    \item Uncertainty:
+        \begin{enumerate}
+            \item[(i)] \textbf{Quantitative}: things we believe we can either estimate or define \textit{a priori}
+            \item[(ii)] \textbf{Qualitative}: scenarios we think are likely, possibly even ranked, but not able to probabilistically decide between
+        \end{enumerate}
+    \item What data do we want to be part of an MP?
+    \item Targets, operational constraints and performance measures
+    \item From many to two: iterative deselection and adaption
+    \item Two become one: what to do when it's close \emph{and} tense...
+    \item Actual adopted MP specs and performance
+    \item Lessons learned and future MP and OM development
+\end{itemize}
+\end{frame}
+% frame 2
+\begin{frame}
+\frametitle{CCSBT Operating Model}
+\begin{itemize}
+\item Previously more than one assessment model and different data interpretations
+\item Part of previous MSE work (prior to over-catch) single OM structure developed
+\item Important to set the base for the MSE here - already too many options later on; get this agreed first...
+\end{itemize}
+\end{frame}
+% frame 3
+%\begin{frame}
+%\frametitle{Quick-capsule life-history}
+%\begin{itemize}
+%\item CCSBT areas: \textbf{juveniles} (summer, area 3 (GAB); winter areas 4-8), \textbf{sub-adults/adults} (feeding, area 9), \textbf{spawners} (staging ground, area 2; spawning ground, area 1 \textit{ca.} Oct-Apr)
+%\begin{figure}
+%\begin{center}
+%\hspace{-1cm}\includegraphics[width=8cm,height=4cm]{CCSBT_areas.pdf}
+%\end{center}
+%\end{figure}
+%\end{itemize}
+%\end{frame}
+% frame 4
+\begin{frame}
+\frametitle{OM structure}
+\begin{itemize}
+\item Seasonal, non-spatial age/length structured model
+\item Data:
+    \begin{enumerate}
+        \item Catch biomass and composition (age/length)
+        \item CPUE (Japanese long-line fleet from 1969 onwards)
+        \item Mark-recapture data (from large-scale tagging in 1990s)
+        \item Fishery independent aerial survey of juvenile SBT
+    \end{enumerate}
+\item Key parameters estimated directly:
+    \begin{enumerate}
+        \item Unfished SSB
+        \item Recruitment deviates
+        \item Natural mortality (ages 4 and 30+, specified func. form)
+        \item Selectivity (time-varying) for each fishery
+    \end{enumerate}
+\end{itemize}
+\end{frame}
+% frame 5
+\begin{frame}
+\frametitle{Quantitative uncertainties: the ``grid''}
+\begin{itemize}
+    \item Key parameters/options where may not have convincing information in data \emph{but} can explore quantitative options:
+        \begin{enumerate}
+            \item {\color{orange} Steepness (h)}: strong but one-way trip decline in CPUE...
+            \item {\color{orange}$M_{0,10}$}: no direct data but vital to define shape of $M_a$
+            \item {\color{orange} $\omega$}: non-linearity of biomass-to-CPUE relationship
+            \item {\color{orange} CPUE series}: spatial weighting options for core series
+            \item {\color{orange} $q$ age-range}: ages over which LL CPUE $q$ calculated
+            \item {\color{orange} Sample size}: initial effective sample sizes 
+        \end{enumerate}
+    \item With grid elements have pre-defined priors \emph{but} option of resampling based on objective function
+\end{itemize}
+\end{frame}
+% frame 6
+\begin{frame}
+\frametitle{Quantitative uncertainties: the ``grid''}
+\begin{itemize}
+    \item For MSE work grid option table (reference set of OMs):
+\begin{table}
+\begin{center}
+\label{tab:datasumm}
+\begin{tabular}{|cccccc|}
+\hline
+& {\tiny Levels} & {\tiny CumulN} & {\tiny Values} & {\tiny Prior} & {\tiny Weighting}\\
+\hline\hline
+{\tiny $h$} & {\tiny 5} & {\tiny 5} & {\tiny 0.55, 0.64, 0.93, 0.82, 0.9} & {\tiny uniform} & {\tiny obj. fun.}\\
+{\tiny $M_0$} & {\tiny 4} & {\tiny 20} & {\tiny 0.3, 0.35, 0.4, 0.45} & {\tiny uniform} & {\tiny obj. fun.}\\
+{\tiny $M_{10}$} & {\tiny 3} & {\tiny 60} & {\tiny 0.07, 0.1, 0.14} & {\tiny uniform} & {\tiny obj. fun.}\\
+{\tiny $\omega$} & {\tiny 1} & {\tiny 60} & {\tiny 1} & {\tiny NA} & {\tiny NA}\\
+{\tiny CPUE} & {\tiny 2} & {\tiny 120} & {\tiny w.5, w.8} & {\tiny uniform} & {\tiny prior}\\
+{\tiny $q$ age-range} & {\tiny 2} & {\tiny 240} & {\tiny 4-18, 8-12} & {\tiny 0.67, 0.33} & {\tiny prior}\\
+{\tiny Sample size} & {\tiny 1} & {\tiny 240} & {\tiny SQRT} & {\tiny NA} & {\tiny NA}\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\item From 240 grid permutations sample of 2000 generated
+\end{itemize}
+\end{frame}
+% frame 7
+\begin{frame}
+\frametitle{Reference set OM SSB \& recruitment}
+\begin{itemize}
+    \item SSB (top, 1e+6t) and recruitment (bottom, millions) median \& 80\% CI
+\begin{figure}
+\begin{center}
+\vspace{-0.75cm}
+%\hspace{-1cm}\includegraphics[width=8cm,height=7cm]{stkrec.pdf}
+\end{center}
+\end{figure}
+\end{itemize}
+\end{frame}
+% frame 8
+\begin{frame}
+\frametitle{Qualitative uncertainties: robustness trials}
+\begin{itemize}
+    \item Location for alternative OM settings/future scenarios
+    \item For SBT main issues:
+        \begin{enumerate}
+            \item Over-catch scenarios (magnitude, CPUE impact)
+            \item CPUE and survey variability
+            \item Tag mixing
+            \item Non-linearity in biomass-to-CPUE
+            \item Alternative CPUE series (model/data)
+            \item Catchability changes (past/future) given LL changes
+        \end{enumerate}
+    \item Core set of plausible robustness trials chosen
+\end{itemize}
+\end{frame}
+% frame 9
+\begin{frame}
+\frametitle{Uncertainty overall}
+\begin{itemize}
+    \item Recruitment stochasticity ($\sigma_R=0.6$) - projections
+    \item Observation/process error in CPUE/survey - projections
+    \item Catch composition - projections
+    \item No direct inclusion of parametric uncertainty (grid only)
+    \item Theory (hope) is robustness tests cover plausible range
+    \item No implementation error assumed in projections
+\end{itemize}
+\end{frame}
+% frame 10
+\begin{frame}
+\frametitle{What data can candidate MPs use?}
+\begin{itemize}
+    \item Previous catch, CPUE, aerial survey, LL age composition
+    \item Have to use \textit{at least} CPUE \textbf{and} aerial survey
+    \item Median and 80\%CI for aerial survey (top) and LL CPUE (bottom): 
+\begin{figure}
+\begin{center}
+\hspace{-1cm}
+%\includegraphics[width=7cm,height=5cm]{data_plot.pdf}
+\end{center}
+\end{figure}
+\end{itemize}
+\end{frame}
+% frame 11
+\begin{frame}
+\frametitle{Targets \& Operational Constraints}
+\begin{itemize}
+    \item SSB rebuilding target: $p(SSB_{y^{\rm targ}}>0.2 SSB_0)=p^{\rm targ}$ 
+    \item Target year: $y^{\rm targ}$ either 2035 or 2040
+    \item Target probability: $p^{\rm targ}$ 0.6, 0.7 and 0.9
+    \item Control variable: global TAC (for fixed national allocation)
+    \item Frequency: every 2 or 3 years 
+    \item Implementation lag: zero or one year
+    \item Minimum TAC change: 100t 
+    \item Maximum TAC change: 3000t/5000t
+\end{itemize}
+\end{frame}
+% frame 12
+\begin{frame}
+\frametitle{Midpoint observation}
+\begin{itemize}
+    \item Lots of switches and options $\equiv$ \textbf{unhelpful}
+    \item If possible quickly explore what matters, what doesn't
+    \item Target level, year \& probability alias 
+    \item Virtually no difference between 2 and 3 years (long-lived)
+    \item Give clear and early advice to Commissioners:
+        \begin{enumerate}
+            \item Avoid specifics until OM and robustness trials defined
+            \item Plan for and expect multiple iterations
+            \item Remove quasi-identitical scenarios 
+        \end{enumerate}
+    \item Makes understanding what matters easier \& faster
+    \item Increases likelihood of acceptance later on...
+\end{itemize}
+\end{frame}
+% frame 13
+\begin{frame}
+\frametitle{Performance measures}
+\begin{itemize}
+    \item Focus of (interim) MP: rebuild SSB to 20\% $SSB_0$
+    \item Base criteria: MP ``tuned'' to targets on reference set OMs
+    \item Tuned MP then run on all relevant robustness trials
+    \item Key SSB performance measures:
+        \begin{enumerate}
+            \item $p(SSB_{\rm fut}<SSB_{\rm min})$: future declines
+            \item $p(SSB_{2022/2025}>0.2 SSB_0)$: half-way point
+            \item $\mathbb{E}(SSB_{\rm fut}/SSB_{2011})$: rebuilding factor
+        \end{enumerate}
+    \item Key catch performance measures:
+        \begin{enumerate}
+            \item Average future catch (range of years)
+            \item Average annual variation (AAV)
+            \item Max. TAC decrease
+            \item $p(C_{t}\uparrow\,|\,C_{t-\tau}\downarrow)$: down-then-up catch trajectories
+        \end{enumerate}
+       \item Create 47,000 figures \& tables...
+\end{itemize}
+\end{frame}
+% frame 14
+\begin{frame}
+    \frametitle{Design \& initial selection process}
+\begin{itemize}
+    \item Member scientists invited to design candidate MPs
+    \item Base criteria: hit targets on reference set of OMs
+    \item Range of candidate MPs:
+        \begin{enumerate}
+            \item Purely empirical with different HCRs
+            \item Model-based (production, relative abundance)
+            \item Fuzzy logic even made an appearance
+        \end{enumerate}
+    \item Core group of CCSBT SC met at technical workshop
+\end{itemize}
+\end{frame}
+% frame 15
+\begin{frame}
+    \frametitle{From many to two}
+\begin{itemize}
+    \item Workshop chose two MPs to go to CCSBT SC in 2010
+    \item Both clearly performed best of suite of candidates
+    \item $MP_1$:
+        \begin{enumerate}
+            \item Model-based (recruit-adult relative abundance model)
+            \item CPUE target-driven
+            \item Recruitment limit-type behaviour
+        \end{enumerate}
+    \item $MP_2$:
+        \begin{enumerate}
+            \item Empirical (using CPUE and aerial survey)
+            \item CPUE trend-driven
+            \item Recruitment target-type behaviour
+        \end{enumerate} 
+\end{itemize}
+\end{frame}
+% frame 16
+\begin{frame}
+    \frametitle{CCSBT 2010}
+\begin{itemize}
+    \item Performance of $MP_1$ and $MP_2$ scrutinised in detail
+    \item $MP_1$ summary:
+        \begin{enumerate}
+            \item lower initial TACs; higher average TACs 
+            \item less catch and SSB variability
+            \item better on pessimistic robustness trials
+        \end{enumerate}
+    \item $MP_2$ summary:
+        \begin{enumerate}
+            \item higher initial TACs; lower average TACs
+            \item more variability in catch and SSB
+            \item better on catchability change trials
+        \end{enumerate}
+    \item Hard to choose...
+    \item Individual and average MP go to Commission
+    \item Commission can't decide, wants more options and work...
+\end{itemize}
+\end{frame}
+% frame 17
+\begin{frame}
+    \frametitle{CCSBT 2011}
+\begin{itemize}
+    \item Minor tweaks but $MP_1$ and $MP_2$ back again...
+    \item CCSBT OM reconditioned with latest data (more positive)
+    \item Target probability agreed: 0.7; TACs every 3 years
+    \item Still in play: 2035 or 2040; 3000t or 5000t; lag or no lag
+    \item \textbf{Issue No. 1}: one MP can't tune to likely settings
+    \item \textbf{Issue No. 2}: issues around ``ownership'' of MP
+    \item Tuning issue means average off the table...
+\end{itemize}
+\end{frame}
+% frame 18
+\begin{frame}
+    \frametitle{Two become one (fast)}
+\begin{itemize}
+    \item Looks like no agreement probable with \textit{status quo}
+    \item 3 days before end of meeting ``fusion'' MP coded
+    \item Introduced to SC for discussion
+    \item SC: if it tunes on problem scenarios we go for it (it did)
+    \item Every available laptop confiscated
+    \item Fusion MP (originally $MP_3$) tuned, robustness trials run
+    \item Good performance balance relative to original MPs
+    \item SC recommends $MP_3$ to Commission for consideration
+\end{itemize}
+\end{frame}
+% frame 19
+\begin{frame}
+    \frametitle{2011 Commission outcomes}
+\begin{itemize}
+    \item The ``Bali Procedure'' adopted by CCSBT Commission:
+        \begin{enumerate}
+            \item Target year: 2035
+            \item Maximum TAC change: 3000t
+            \item 1 year implementation lag (except for 2012)
+         \end{enumerate}
+     \item Initial TAC increase limited to 1000t (new TAC 10,449t)
+     \item TAC locked for 2012/2013 
+     \item 2014 TAC min. of 12,449t or level from MP (2015-2017)
+\end{itemize}
+\end{frame}
+% frame 20
+\begin{frame}
+    \frametitle{Specifications of CCSBT MP}
+\begin{itemize}
+    \item Key data: LL CPUE \& aerial survey
+    \item RE model for juvenile ($R_y$), adult ($B_y$) biomass:
+        \begin{align*}
+            \ds B_{y} &= R_{y}+g_{y-1}B_{y-1},\\ 
+            \ds R_y &= \exp\left(\mu_R+\eps^R_y\right),\\
+            \ds g_y &= \exp\left(\mu_g+\eps^g_y\right),\\
+            \ds \eps^\bullet_y &\sim N\left(-\sigma^2_\bullet/2,\sigma^2_\bullet\right).
+        \end{align*}
+    \item Aerial survey: $I^{AS}_{y-1}\sim R_y$
+    \item LL CPUE: $I^{CPUE}_y\sim B_y$
+\end{itemize}
+\end{frame}
+% frame 21
+\begin{frame}
+    \frametitle{Specifications of CCSBT MP}
+\begin{itemize}
+    \item Mini-assessment central to MP:
+\begin{figure}
+\begin{center}
+\hspace{-1cm}
+%\includegraphics[width=6cm,height=6cm]{fits_pvals.pdf}
+\end{center}
+\end{figure}
+\end{itemize}
+\end{frame}
+% frame 22
+\begin{frame}
+    \frametitle{Specifications of CCSBT MP}
+\begin{itemize}
+    \item HCR is an average of two candidate TACs:
+        \begin{equation*}
+            \ds TAC^1_{y+1}=TAC_y\times \left\{\begin{array}{rcl}\ds{1-k_1|\lambda|^{\gamma}} & \mbox{for} & \lambda<0\\[0.35cm]
+\ds{1+k_2\lambda} & \mbox{for} & \lambda\geq 0 
+    \end{array}\right.
+        \end{equation*}
+    \item Above $\lambda$ is the slope in the regression of $\ln B_y$ against year (from years $y-\tau_B+1$ to year $y$)
+    \item $k_1$ and $k_2$ ``gain'' parameters; $\gamma\geq1$ action asymmetry
+\end{itemize}
+\end{frame}
+% frame 23
+\begin{frame}
+    \frametitle{Specifications of CCSBT MP}
+\begin{itemize}
+    \item Second candidate TAC:
+        \begin{align*}
+            \ds TAC^2_{y+1} &= 0.5\times\left(TAC_y+C^{\rm targ}_y\Delta^R_y\right),\\
+                \ds C^{\rm targ}_y &= \left\{\begin{array}{rcl}\ds{\delta \left[\frac{B_{y}}{B^*}\right]^{1-\veps_b}} & \mbox{for} & B_{y}\geq B^*\\[0.35cm]
+\ds{\delta \left[\frac{B_{y}}{B^*}\right]^{1+\veps_b}} & \mbox{for} & B_{y}<B^*
+    \end{array}\right.,\\
+\ds \Delta^R_y &= \left\{\begin{array}{rcl}\ds{\left[\frac{\bar{R}}{\mathcal{R}}\right]^{1-\veps_r}} & \mbox{for} & \bar{R}\geq\mathcal{R}\\[0.35cm]
+\ds{\left[\frac{\bar{R}}{\mathcal{R}}\right]^{1+\veps_r}} & \mbox{for} & \bar{R}<\mathcal{R}
+\end{array}\right.
+        \end{align*}
+\end{itemize}
+\end{frame}
+% frame 24
+\begin{frame}
+    \frametitle{Specifications of CCSBT MP}
+\begin{itemize}
+    \item $\delta$ ``target'' catch (tuning parameter)
+    \item $B^*$: ``target'' CPUE (mean CPUE obs. @ 20\% $SSB_0$)
+    \item $\bar{R}$ average recent juvenile biomass:
+      \begin{equation*}
+      \ds \bar{R}=\frac{1}{\tau_R}\sum\limits_{i=y-\tau_R+1}^{y}R_i,
+      \end{equation*}
+    \item $\mathcal{R}$: ``limit'' level; mean survey 1993-2011
+    \item $\veps^\bullet\in[0,1]$ action asymmetry 
+\end{itemize}
+\end{frame}
+% frame 25
+\begin{frame}
+    \frametitle{Specifications of CCSBT MP}
+\begin{itemize}
+    \item Overall: $TAC_{y+1}=0.5\times\left(TAC^1_{y+1}+TAC^2_{y+1}\right)$ 
+    \item Control parameters:
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|cc|}
+\hline
+Parameter & BP\\
+\hline\hline
+$\delta$ & 30,750\\
+$k_1$ & 1.5\\
+$k_2$ & 3\\
+$\gamma$ & 1\\
+$\tau_B$ & 7\\
+$B^*$ & 1.2\\
+$\veps_b$ & 0.25\\
+$\veps_r$ & 0.75\\
+$\tau_r$ & 5\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\end{itemize}
+\end{frame}
+% frame 25a
+\begin{frame}
+    \frametitle{Bali Procedure performance}
+\begin{itemize}
+    \item Detailed summary for key robustness tests:
+\begin{figure}
+\begin{center}
+%\vspace{-0.75cm}
+\hspace{-1cm}
+%\includegraphics[width=7cm,height=7cm]{Compare_Group_Stats_2035.pdf}
+\end{center}
+\end{figure}
+\end{itemize}
+\end{frame}
+% frame 26
+\begin{frame}
+    \frametitle{Bali Procedure performance}
+\begin{itemize}
+    \item Performance summary:
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|ccccc|}
+\hline
+{\tiny Scenario} & {\tiny $p(SSB_{2035}>0.2 SSB_0)$} & {\tiny $\mathbb{E}\left(\frac{SSB_{2022}}{SSB_{2011}}\right)$} & {\tiny $\mathbb{E}(C_{2012-2022})$} & {\tiny $p(C\uparrow\downarrow)$}\\
+\hline\hline
+{\tiny Ref. 3000t} & {\tiny 0.7} & {\tiny 2.76} & {\tiny 15,200} & {\tiny 0.49}\\
+{\tiny Ref. 5000t} & {\tiny 0.7} & {\tiny 2.65} & {\tiny 15,600} & {\tiny 0.71}\\
+& {\tiny \textbf{Robustness trials }} & & & \\
+{\tiny lowR, 3000t} & {\tiny 0.66} & {\tiny 2.32} & {\tiny 13,200} & {\tiny 0.83}\\
+ {\tiny Upq, 3000t} & {\tiny 0.45} &  {\tiny 2.58} & {\tiny 15,300} & {\tiny 0.5}\\
+{\tiny STWin, 3000t} & {\tiny 0.34} & {\tiny 2.39} & {\tiny 12,872} & {\tiny 0.81}\\
+{\tiny Omega75, 3000t} & {\tiny 0.48} & {\tiny 2.74} & {\tiny 13,304} & {\tiny 0.74}\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\end{itemize}
+\end{frame}
+% frame 27
+\begin{frame}
+    \frametitle{Bali Procedure performance}
+\begin{itemize}
+    \item ``Worm'' plot (reference OM):
+\begin{figure}
+\begin{center}
+\vspace{-0.75cm}
+\hspace{-1cm}
+%\includegraphics[width=7cm,height=7cm]{worms.pdf}
+\end{center}
+\end{figure}
+\end{itemize}
+\end{frame}
+% frame 28
+\begin{frame}
+    \frametitle{Lessons learned (technical)}
+\begin{itemize}
+    \item Tuning is \textbf{essential} - main point of reference set OMs
+    \item Crucial comparability baseline between candidate MPs
+    \item ``Entry level'' test: no tuning, no further...
+    \item Use pessimistic robustness tests to rule out riskier MPs
+    \item Detailed robustness performance for final ``decisions''
+\end{itemize}
+\end{frame}
+% frame 28a
+\begin{frame}
+    \frametitle{Lessons learned (general)}
+\begin{itemize}
+    \item Going to take a number of years; plan accordingly
+    \item Agree and codify ``exceptional circumstances''
+    \item Clear guidance to Commissioners right from start
+    \item Minimise options given to Commissioners
+    \item Encourage full collaborative developement
+    \item For CCSBT ``Olympic'' approach led to stalemate
+    \item Get ``member ownership'' off the table early
+\end{itemize}
+\end{frame}
+% frame 29
+\begin{frame}
+    \frametitle{Future OM \& MP work}
+\begin{itemize}
+    \item Develop spatial OMs (use tagging/e-tagging data)
+    \item Include close-kin genetics into OM (adult abundance)
+    \item Adopted MP is \emph{interim} (get to limit level)
+    \item MP in place is good but not a recovery guarantee:
+        \begin{enumerate}
+            \item Keep exploring cost-effective monitoring
+            \item Future development of adjusted/alternative MPs
+            \item Time does not stand still post implementation...
+        \end{enumerate}
+\end{itemize}
+\end{frame}
+% frame 30
+\begin{frame}
+    \frametitle{Acknowledgements}
+\begin{itemize}
+    \item Over many years member scientists, Commissioners and indepedent panel of the CCSBT SC
+\end{itemize}
+\end{frame}
+
+\end{document}

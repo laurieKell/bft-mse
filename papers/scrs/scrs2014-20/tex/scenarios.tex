@@ -1,0 +1,90 @@
+\documentclass[a4paper,10pt]{article}
+%\documentclass[a4paper,10pt]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[authoryear]{natbib}
+
+\begin{document}
+
+\section{Scenarios}
+
+Table x (PossibleModellingApproachesNoFigs131205.xlsx) summarises the different sources of uncertainty, i.e
+process, observation, estimation, implementation, model, value, translational or institutional. In this study
+only model and value uncertainty are considered and possible modelling approaches are summarised in the final
+column. These are summarised and factors and levels in table \ref{tab:scn}. The $3_{rd}$ column summarises the 
+number of levels for each factor. The $4_{th}$ column shows the cummulative number of scenarios if only the 
+main effects are modelled, i.e. one a single level is varied in the base case at a time. The $5_{th}$ column 
+shows the cummulative number of scenarios if all interactions between factors are considered.
+
+\textit{[The second block are scenarios that we may discuss but not actually run]}
+
+
+The first two factors \textbf{Historic Catch} and \textbf{Future Recruitment} were the sources of uncertainty 
+included in the assessment and projections used to calculate the K2SM.
+The values of steepness chosen were 1 (as assumed in the assessment) and 0.7 an arbitary value to provide some 
+contrast. Natural mortality was either that assumed by the working group (SCRS) or derived from weight-at-age
+(Lorenzen, 1996). To evaluate the effect of artisanal fisheries juvenile mortality was increased by a factor of 
+(0, 0.5 or 1). Plus group dynamics were evaluated for an increase in mortality and by setting the $F_{ratio}$ to 1.
+The working group had estimated the $F_{ratio}$.
+
+Mis-specification in growth parameters were evaluated for k and $L_{\infty}$. This was done by generating a 
+length frequency from the numbers, length and CV of length-at-age for each year and then using slicing
+slicing to generate a new catch-at-age matrix.
+
+Two populations were modelled which had the same populations parameters but with different historic catch ratios, i.e.
+1:1 or 1:2.
+
+For bluefin in common with many stocks stock biomass, reference points,
+stock recruitment relationships and projections are based on spawning stock biomass (SSB) and spawner per recruit (SPR); which assumes that fecundity is 
+proportional to mass-at-age irrespective of the demographic composition of adults \cite{murawski2001impacts} and that somatic growth is
+time-invariant. However, egg production to those based on SSB. We then evaluate the sensitvity of reference points and stock recruitment relationships 
+to the level of biological knowledge incorporated into assessment advice and discuss the consequences for management and the use of 
+meta analysis to develop priors for key parameters used in stock assessment. However, the growing literature describing maternal effects on different aspects of
+population dynamics including fecundity, viability of eggs and larvae, the temporal and spatial structure of spawning and possibly recruitment for these 
+reasons Marshall (2009) argues that rather than SSB total egg production should be used.
+
+
+
+%fc=c(2,3,2,2,2,2,2,3,3,2,2)
+% 
+%cumsum(fc-c(0,rep(1,length(fc)-1)))
+%cumprod(fc)
+  
+   
+\begin{table}
+\begin{center}
+\label{tab:datasumm}
+\begin{tabular}{|ccccc|}
+\hline
+{\tiny Factor}                	& {\tiny Levels} 				& {\tiny N}	& {\tiny $\Sigma$ Main Effects}	& {\tiny $\Sigma$ Interactions}\\				
+\hline\hline
+{\tiny Historic Catch} 		& {\tiny Reported, Inflated}			& {\tiny 2}	& {\tiny 2}			& {\tiny 2}\\				
+{\tiny Future Recruitment}	& {\tiny medium,low,high}			& {\tiny 3}	& {\tiny 4}			& {\tiny 6}\\ 	
+{\tiny Steepness}		& {\tiny 1, 0.7}				& {\tiny 2}  	& {\tiny 5}			& {\tiny 12}\\
+{\tiny Natural Mortality}	& {\tiny SCRS, Life History}			& {\tiny 2}  	& {\tiny 6}			& {\tiny 24}\\
+{\tiny Juvenile Mortality} 	& {\tiny $M_1 \times$ (1,1.5)}   		& {\tiny 2}  	& {\tiny 7}			& {\tiny 48}\\
+{\tiny Plus Group Mortality} 	& {\tiny $M_{PG} \times$ (1, 2)}		& {\tiny 2}  	& {\tiny 8}			& {\tiny 96}\\
+{\tiny Plus Group Fratio} 	& {\tiny SCRS, 1.0}				& {\tiny 2}  	& {\tiny 9}			& {\tiny 192}\\
+\hline\hline
+{\tiny ALK \& k} 		& {\tiny k $\times$ (1, 0.75,1.25)}		& {\tiny 3}  	& {\tiny 11}			& {\tiny 576}\\
+{\tiny ALK \& $L_{\infty}$} 	& {\tiny  $L_{\infty}$ $\times$ (1,0.75,1.25)}	& {\tiny 3}  	& {\tiny 12}			& {\tiny 1728}\\
+{\tiny 2 Populations} 		& {\tiny 1:1,1:2}				& {\tiny 2}  	& {\tiny 14}			& {\tiny 3456}\\
+{\tiny SRP} 			& {\tiny SSB, TEP}				& {\tiny 2}	& {\tiny 15}			& {\tiny 6912}\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Scenarios}
+\label{tab:scn}
+\end{table}
+
+\clearpage
+\section{References}
+Lorenzen, K. "The relationship between body weight and natural mortality in juvenile and adult fish: a comparison of natural ecosystems 
+and aquaculture." Journal of fish biology 49.4 (1996): 627-642.\\
+
+
+Marshall, T., (2009). Implementing information on stock reproductive potential in fisheries management: The motivation, challenges and opportunities.
+In Jakobsen, T., Fogarty, M.J., Megrey, B. A., Monksness, E., (Eds), Fish reproductive biology. Implications for assessment and management. Wiley-BlackWell. A john Wiley
+\& Sons, Ltd., Publication. Oxford, UK. pp. 395-420.
+
+\end{document}

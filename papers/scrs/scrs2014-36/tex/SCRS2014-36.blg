@@ -1,0 +1,68 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: SCRS2014-36.aux
+The style file: abbrvnat.bst
+Database file #1: refs.bib
+I was expecting a `,' or a `}'---line 2544 of file refs.bib
+ :   
+ :   title={Report of the Working Group on the assessment of demersal stocks in the North Sea and
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 2552 of file refs.bib
+ :   
+ :   title={Report of the herring assessment Working Group for the area south of 62 N. ICES CM 2009/ACOM:03},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field name---line 3884 of file refs.bib
+ : 
+ : %  title={},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Name 3 in "Fromentin, J-M. and Bonhommeau, S. and Arrizabalaga, H., and L. Kell, L.T." has a comma at the end for entry fromentin2014spectre
+while executing---line 1347 of file abbrvnat.bst
+Name 3 in "Fromentin, J-M. and Bonhommeau, S. and Arrizabalaga, H., and L. Kell, L.T." has a comma at the end for entry fromentin2014spectre
+while executing---line 1429 of file abbrvnat.bst
+Name 3 in "Fromentin, J-M. and Bonhommeau, S. and Arrizabalaga, H., and L. Kell, L.T." has a comma at the end for entry fromentin2014spectre
+while executing---line 1429 of file abbrvnat.bst
+You've used 8 entries,
+            2773 wiz_defined-function locations,
+            638 strings with 6154 characters,
+and the built_in function-call counts, 4490 in all, are:
+= -- 379
+> -- 328
+< -- 2
++ -- 111
+- -- 102
+* -- 420
+:= -- 710
+add.period$ -- 24
+call.type$ -- 8
+change.case$ -- 58
+chr.to.int$ -- 7
+cite$ -- 16
+duplicate$ -- 166
+empty$ -- 323
+format.name$ -- 112
+if$ -- 916
+int.to.chr$ -- 2
+int.to.str$ -- 1
+missing$ -- 8
+newline$ -- 48
+num.names$ -- 32
+pop$ -- 101
+preamble$ -- 1
+purify$ -- 50
+quote$ -- 0
+skip$ -- 130
+stack$ -- 0
+substring$ -- 192
+swap$ -- 10
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 88
+warning$ -- 0
+while$ -- 34
+width$ -- 0
+write$ -- 111
+(There were 6 error messages)

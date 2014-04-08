@@ -1,0 +1,94 @@
+Bluefin Tuna OM Conditioning
+========================================================
+  
+```{r, echo=FALSE}
+opts_chunk$set(comment=NA, 
+               fig.width =8, 
+               fig.height=6,
+               fig.path  ="../tex/om",
+               warning=FALSE, 
+               message=FALSE, 
+               error  =FALSE, 
+               echo   =FALSE,
+               cache  =FALSE)
+```
+
+```{r}
+library(FLCore)
+library(kobe)
+library(diags)
+library(FLBRP)
+library(ggplotFL)
+
+dirMy  ="/home/laurie/Desktop/scrs2014/scrs2014-bft-mp"
+dirKobe="/home/laurie/Desktop/ICCAT/SCRS/kobe/Inputs"
+
+dirDat=paste(dirMy,"data",sep="/")
+dirInp=paste(dirKobe,"/bfte/2012/vpa",sep="")
+
+scn=expand.grid(Catch         =c("inflated","reported"),
+                Recruitment   =c("low","med","high")[2],
+                stringsAsFactors=FALSE)
+```
+
+**VPAs**
+```{r}
+m  =c(0.49, 0.24, 0.24, 0.24, 0.24, 0.20,0.175,0.15, 0.125,0.10)
+fls=mdply(scn,function(Catch,Recruitment) paste(dirInp,Catch,Recruitment,"bfte2012.c1",sep="/"))[,3]
+OMs=FLStocks(mlply(fls,readVPA2Box,m=m))
+
+names(OMs)=unlist(scn[1])
+```
+
+**Reference Points**
+```{r}
+BRPs=FLBRPs(llply(OMs,FLBRP))
+
+names(BRPs)=names(OMs)
+```
+
+
+```{r}
+plot(rec(OMs[[1]])[,ac(1991:2001)])
+```
+
+```{r}
+plot(rec(OMs[[1]])[,ac(1950:1985)])
+```
+
+**Create Recruitment Deviates**
+```{r}
+## Scenarios
+ops=cbind(expand.grid(catch=c("inflated","reported"),
+                min  =c(1950,1950,1991)),
+                max  =rep(c(1985,2010,2010),each=2))
+
+## Get deviates
+dev=FLQuants(mlply(ops,function(catch,min,max,OM) 
+                             rec(OM[[catch]])[,ac(min:max)],
+                   OM=OMs))
+
+## Get random samples
+srDevs=FLQuants(llply(dev,function(x) 
+                      FLQuant(sample(c(x),prod(unlist(dim(x))),TRUE),
+                              dimnames=list(age=1,year=2010:2050,iter=1:500))))
+
+attributes(srDevs)$scn=ops
+```
+
+
+```{r}
+save(OMs,   file=paste(dirDat,   "OMs.RData",  sep="/"))
+save(BRPs,  file=paste(dirDat,   "BRPs.RData", sep="/"))             
+save(srDevs,file=paste(dirDat,    "srDev.RData",sep="/"))             
+```
+
+**Constant catch Projections**
+```{r}
+OMs[["reported"]]=fwdWindow(OMs[["reported"]],end=2030,BRPs[["reported"]])
+prj=fwd(OMs[["reported"]],catch=FLQuant(1000*13000,dimnames=list(year=2010:2030)),
+                         sr   =BRPs[["reported"]],
+                         sr.residuals=srDev[[1]])
+
+plot(prj)
+```
